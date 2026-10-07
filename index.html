@@ -3,24 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Aarav HQ</title>
+<title>HQ</title>
 <meta name="theme-color" content="#06070b" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#e9e6f2" media="(prefers-color-scheme: light)">
 <script>try{var t=(JSON.parse(localStorage.getItem("aaravhq:v1")||"{}").settings||{}).theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;else if(matchMedia("(prefers-color-scheme: light)").matches)document.documentElement.dataset.theme="light"}catch(e){}</script>
-<meta name="description" content="Aarav HQ: clock, weather, calendar, news, music, focus, goals, notes and habits.">
+<meta name="description" content="HQ: clock, weather, calendar, news, music, focus, goals, notes and habits.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Aarav HQ">
+<meta name="apple-mobile-web-app-title" content="HQ">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Doto:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=9">
+<style>#splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:radial-gradient(120% 80% at 50% 30%,#1a1220 0%,#06070b 70%);transition:opacity .6s cubic-bezier(.4,0,.2,1),visibility .6s}html[data-theme=light] #splash{background:radial-gradient(120% 80% at 50% 30%,#fff 0%,#e9e6f2 70%)}#splash.out{opacity:0;visibility:hidden;pointer-events:none}#splash.quick{transition-duration:.25s}</style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-in"><div class="sp-drop"><i></i><b>H</b></div><div class="sp-word"><i>HQ</i></div><div class="sp-line"><i></i></div></div></div>
 <div class="bg" aria-hidden="true">
   <div class="aur"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i></div>
   <div class="orb"><i></i></div><div class="orb o2"><i></i></div>
@@ -45,11 +47,12 @@
 </svg>
 <header class="top" id="top">
   <div class="bar"><span class="barglass lg pillglass" aria-hidden="true"></span>
-    <a class="brand tap" href="#home"><span class="mark">A</span><span class="bn">Aarav<i>HQ</i></span></a>
+    <a class="brand tap" href="#home"><span class="mark">H</span><span class="bn"><i>HQ</i></span></a>
     <span class="barclock" id="barClock"></span>
-    <div class="tops"><button class="iconbtn tap" id="themeBtn" aria-label="Theme" title="Theme"></button><button class="iconbtn acc tap" id="qcBtn" aria-label="Quick capture" title="Quick capture"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    <div class="tops"><button class="iconbtn tap" id="searchBtn" aria-label="Search (⌘K)" title="Search  ⌘K"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button><button class="iconbtn tap" id="themeBtn" aria-label="Theme" title="Theme"></button><button class="iconbtn acc tap" id="qcBtn" aria-label="Quick capture" title="Quick capture"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
   </div>
 </header>
+<div class="ptr" id="ptr" aria-hidden="true"><span class="drop"><svg viewBox="0 0 24 24"><path d="M12 5v12M6.5 11.5 12 17l5.5-5.5"/></svg><i class="spin"></i></span></div>
 <main id="view" class="view"></main>
 <nav class="dock lg pillglass" id="dock">
   <span class="dockblob" id="dockBlob" aria-hidden="true"></span>
@@ -61,8 +64,9 @@
 </nav>
 <div id="ytWrap" class="ytwrap off"><div id="ytPlayer"></div></div>
 <div id="mini" class="mini lg pillglass hidden" role="region" aria-label="Mini player">
-  <img id="miniThumb" alt="" src="icons/icon-192.png"><div class="mt"><b id="miniTitle">Nothing playing</b><span id="miniSub">Aarav HQ Radio</span></div>
+  <div class="mcont" id="mCont" role="button" tabindex="0" aria-label="Open Now Playing"><img id="miniThumb" alt="" src="icons/icon-192.png"><div class="mt"><b id="miniTitle">Nothing playing</b><span id="miniSub">HQ Radio</span></div></div>
   <button id="mPrev" aria-label="Previous"><svg viewBox="0 0 24 24" class="gi"><path d="M6 5v14M19 5 9 12l10 7z"/></svg></button><button id="mPlay" class="pp" aria-label="Play/Pause"><svg viewBox="0 0 24 24" class="gi f"><path d="M7 4.5v15l12.5-7.5z"/></svg></button><button id="mNext" aria-label="Next"><svg viewBox="0 0 24 24" class="gi"><path d="M18 5v14M5 5l10 7-10 7z"/></svg></button>
+  <i class="mprog" aria-hidden="true"><i id="miniProg"></i></i>
 </div>
 <div class="scrim" id="scrim"></div>
 <div class="sheet lg pillglass" id="sheet" role="dialog" aria-label="Quick capture">
@@ -70,7 +74,49 @@
   <form id="qcForm"><textarea id="qcText" placeholder="What's on your mind?" rows="3"></textarea><div class="row" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn ghost" id="qcCancel">Cancel</button><button class="btn pri">Save</button></div></form>
 </div>
 <div id="toast" class="toast"></div>
-<script src="app.js"></script>
-<script src="fx.js"></script>
+<div class="reader" id="reader" aria-hidden="true" role="dialog" aria-label="Article">
+  <div class="rd-sheet" id="rdSheet">
+    <div class="rd-prog"><i id="rdProg"></i></div>
+    <div class="rd-bar" id="rdBar"><span class="grab" aria-hidden="true"></span>
+      <button class="rbtn tap" id="rdClose" aria-label="Close"><svg viewBox="0 0 24 24" class="gi"><path d="M6 9l6 6 6-6"/></svg></button>
+      <span class="rd-bsrc ell" id="rdBsrc"></span>
+      <div class="rd-acts"><button class="rbtn tap" id="rdPrev" aria-label="Previous story"><svg viewBox="0 0 24 24" class="gi"><path d="M15 6l-6 6 6 6"/></svg></button><button class="rbtn tap" id="rdNext" aria-label="Next story"><svg viewBox="0 0 24 24" class="gi"><path d="M9 6l6 6-6 6"/></svg></button><button class="rbtn tap aa" id="rdAa" aria-label="Text settings"><span>A</span><span>A</span></button><button class="rbtn tap bmk" id="rdBm" aria-label="Save for later"><svg viewBox="0 0 24 24" class="gi"><path d="M7 3.5h10a1 1 0 0 1 1 1V20l-6-4-6 4V4.5a1 1 0 0 1 1-1z"/></svg></button><button class="rbtn tap" id="rdShare" aria-label="Share"><svg viewBox="0 0 24 24" class="gi"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 13v5.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V13"/></svg></button></div>
+    </div>
+    <div class="rd-scroll" id="rdScroll"><article class="rd-page" id="rdPage"></article></div>
+    <div class="rd-pop" id="rdPop" role="dialog" aria-label="Text settings">
+      <div class="rp-row" id="rpFs"><button class="rbtn tap" data-d="-1" aria-label="Smaller text"><span style="font-size:13px">A</span></button><span class="rp-dots" id="rpDots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><button class="rbtn tap" data-d="1" aria-label="Larger text"><span style="font-size:21px">A</span></button></div>
+      <div class="seg rp-seg" id="rpFont"><button data-f="serif" class="serif">Serif</button><button data-f="sans">Sans</button></div>
+      <div class="rp-th" id="rpTh"><button data-t="light" class="t-light" aria-label="Light">Aa</button><button data-t="sepia" class="t-sepia" aria-label="Sepia">Aa</button><button data-t="dark" class="t-dark" aria-label="Dark">Aa</button></div>
+    </div>
+  </div>
+</div>
+<div class="np" id="np" aria-hidden="true" role="dialog" aria-label="Now Playing">
+  <div class="np-bg" aria-hidden="true"><img class="amb" id="npAmbA" alt=""><img class="amb b" id="npAmbB" alt=""><canvas id="npAmb" width="24" height="24"></canvas><i class="nb1"></i><i class="nb2"></i><i class="nb3"></i><i class="ngr"></i></div>
+  <div class="np-in" id="npIn">
+    <div class="np-top"><button class="rbtn tap" id="npClose" aria-label="Close"><svg viewBox="0 0 24 24" class="gi"><path d="M6 9l6 6 6-6"/></svg></button><div class="np-from"><span>Playing from</span><b class="ell" id="npFrom"></b></div><button class="rbtn tap" id="npMode" aria-label="Show video"></button></div>
+    <div class="np-stage"><div class="np-art" id="npArt"><div class="np-artin" id="npArtIn"></div></div><div class="np-vid" id="npVid"></div></div>
+    <div class="np-meta"><div class="grow" style="min-width:0"><h2 class="ell" id="npT">Nothing playing</h2><p class="ell" id="npA"></p></div><button class="rbtn tap" id="npQbtn" aria-label="Up next"><svg viewBox="0 0 24 24" class="gi"><path d="M4 6h12M4 11h12M4 16h7M17 14v6l4-3z"/></svg></button></div>
+    <div class="np-scrub" id="npScrub" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100"><span class="st"><i class="sf"></i></span><i class="sk"></i></div>
+    <div class="np-times"><span id="npCur">0:00</span><span id="npDur">-0:00</span></div>
+    <div class="np-ctl"><button class="nbtn sm tap" id="npShuf" aria-label="Shuffle"></button><button class="nbtn tap" id="npPrev" aria-label="Previous"></button><button class="nbtn big tap" id="npPlay" aria-label="Play"></button><button class="nbtn tap" id="npNext" aria-label="Next"></button><button class="nbtn sm tap" id="npRep" aria-label="Repeat"></button></div>
+    <canvas class="np-viz" id="npViz" aria-hidden="true"></canvas>
+    <div class="np-vol" id="npVolRow"><svg viewBox="0 0 24 24" class="gi"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/></svg><div class="np-scrub vol" id="npVol" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100"><span class="st"><i class="sf"></i></span><i class="sk"></i></div><svg viewBox="0 0 24 24" class="gi"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg></div>
+    <section class="np-q"><div class="kicker">Up next</div><div id="npQ"></div></section>
+  </div>
+</div>
+<div class="spot" id="spot" hidden role="dialog" aria-label="Search">
+  <div class="spot-scrim" data-close></div>
+  <div class="spot-box glass">
+    <div class="spot-in"><svg viewBox="0 0 24 24" class="gi"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="spotQ" type="search" placeholder="Search notes, events, news, music, tools…" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Search" aria-controls="spotRes"><button class="spot-x tap" id="spotX" aria-label="Close search">Cancel</button></div>
+    <div class="spot-res" id="spotRes" role="listbox"></div>
+    <div class="spot-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>
+  </div>
+</div>
+<script src="app.js?v=9"></script>
+<script src="news.js?v=9"></script>
+<script src="music.js?v=9"></script>
+<script src="search.js?v=9"></script>
+<script src="fx.js?v=9"></script>
+<script src="boot.js?v=9"></script>
 </body>
 </html>
