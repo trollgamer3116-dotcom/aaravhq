@@ -1246,3 +1246,7 @@ body[data-view=news] .news-summary{margin-bottom:18px}
 .nfeat.clear-lead::before{content:'';position:absolute;width:300px;height:300px;right:-130px;top:-120px;border-radius:50%;border:1px solid #c7ddff55;box-shadow:inset 0 1px 0 #ffffff80,inset 12px -12px 35px #91baff0d,0 0 0 24px #91baff05;pointer-events:none}
 @media(min-width:900px){.news-lead .nfeat{min-height:450px}}
 @media(max-width:600px){.news-lead .nfeat.clear-lead{min-height:360px}.nfeat.clear-lead .tx{padding:24px}.nfeat.clear-lead h3{font-size:30px}}
+
+/* A contrast floor for floating labels above photos and video. */
+html[data-theme=light] .dock{background:linear-gradient(145deg,#ffffffa6,#ffffff8c)}
+html[data-theme=light] .dock a:not(.on){color:#242933}

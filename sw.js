@@ -1,5 +1,5 @@
-const V='aaravhq-v19';
-const CORE=['./','index.html','styles.css?v=19','app.js?v=19','news.js?v=19','music.js?v=19','search.js?v=19','fx.js?v=19','boot.js?v=19','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
+const V='aaravhq-v20';
+const CORE=['./','index.html','styles.css?v=20','app.js?v=20','news.js?v=20','music.js?v=20','search.js?v=20','fx.js?v=20','boot.js?v=20','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
 const FONT_HOSTS=/^(fonts\.googleapis\.com|fonts\.gstatic\.com)$/;
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('aaravhq-v')&&k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
