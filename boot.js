@@ -40,7 +40,7 @@ render();
  if(seen||RMQ.matches){s.classList.add('quick');out();return}
  Promise.race([document.fonts?document.fonts.ready:Promise.resolve(),new Promise(r=>setTimeout(r,1400))]).then(()=>setTimeout(out,Math.max(0,1150-performance.now())))})();
 // warm the offline font cache once the service worker controls the page (latin subsets only)
-function warmFonts(){try{if(!navigator.serviceWorker.controller||!navigator.onLine||localStorage.getItem('hq:fw')==='10')return;const l=document.querySelector('link[rel=stylesheet][href*="fonts.googleapis"]');if(!l)return;
- fetch(l.href,{mode:'cors'}).then(r=>r.ok?r.text():Promise.reject()).then(css=>Promise.all(css.split('/*').filter(b=>/^\s*latin(-ext)?\s*\*\//.test(b)).map(b=>(b.match(/url\((https:[^)]+)\)/)||[])[1]).filter(Boolean).map(u=>fetch(u,{mode:'cors'}).catch(()=>{})))).then(()=>{try{localStorage.setItem('hq:fw','10')}catch(e){}}).catch(()=>{})}catch(e){}}
+function warmFonts(){try{if(!navigator.serviceWorker.controller||!navigator.onLine||localStorage.getItem('hq:fw')==='11')return;const l=document.querySelector('link[rel=stylesheet][href*="fonts.googleapis"]');if(!l)return;
+ fetch(l.href,{mode:'cors'}).then(r=>r.ok?r.text():Promise.reject()).then(css=>Promise.all(css.split('/*').filter(b=>/^\s*latin(-ext)?\s*\*\//.test(b)).map(b=>(b.match(/url\((https:[^)]+)\)/)||[])[1]).filter(Boolean).map(u=>fetch(u,{mode:'cors'}).catch(()=>{})))).then(()=>{try{localStorage.setItem('hq:fw','11')}catch(e){}}).catch(()=>{})}catch(e){}}
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('SW',e)));
  navigator.serviceWorker.addEventListener('controllerchange',()=>setTimeout(warmFonts,1500));setTimeout(warmFonts,5000)}

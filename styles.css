@@ -950,3 +950,20 @@ html:not([data-theme=light]) .dock,html:not([data-theme=light]) .mini,html:not([
 html[data-theme=light] .dock a{text-shadow:0 1px 1px rgba(255,255,255,.85),0 0 8px rgba(255,255,255,.6)}
 .dock a:not(.on){color:rgba(246,244,241,.75)}
 html[data-theme=light] .dock a:not(.on){color:rgba(21,19,26,.68)}
+/* ===== v4.2 true clear liquid glass for cards: near-zero fill, the shape comes from light, not tint ===== */
+.glass{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.012) 45%,rgba(255,255,255,.008) 70%,rgba(255,255,255,.03));
+ -webkit-backdrop-filter:blur(3px) saturate(190%) brightness(1.06);backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
+ box-shadow:inset 1.5px 1.5px 0 -.25px rgba(255,255,255,.5),inset -1px -1px 0 -.25px rgba(255,255,255,.16),inset 0 0 0 .6px rgba(255,255,255,.12),inset 0 0 16px rgba(255,255,255,.045),0 30px 60px -36px rgba(0,0,0,.7)}
+html.lgsvg .glass.lens{-webkit-backdrop-filter:url(#lg-card) blur(3px) saturate(190%) brightness(1.06);backdrop-filter:url(#lg-card) blur(3px) saturate(190%) brightness(1.06)}
+/* specular rim: bright top-left, softer bottom-right, plus the pointer-following glint */
+.glass::before{padding:1.2px;background:radial-gradient(260px circle at var(--mx) var(--my),rgba(255,255,255,.85),rgba(255,255,255,0) 60%),linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.18) 28%,rgba(255,255,255,.04) 55%,rgba(255,255,255,.1) 80%,rgba(255,255,255,.38))}
+/* edge refraction: thin chromatic fringes and a corner glare, transparent in the middle */
+.glass::after{background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,0) 18%,rgba(255,255,255,0) 84%,rgba(255,255,255,.06));
+ box-shadow:inset 2px 0 3px -2px rgba(255,120,140,.35),inset -2px 0 3px -2px rgba(120,200,255,.38),inset 0 2px 3px -2px rgba(255,255,255,.3)}
+.glass{text-shadow:0 1px 2px rgba(0,0,0,.45),0 0 14px rgba(0,0,0,.25)}
+html[data-theme=light] .glass{background:linear-gradient(150deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 45%,rgba(255,255,255,.03) 70%,rgba(255,255,255,.1));
+ box-shadow:inset 1.5px 1.5px 0 -.25px rgba(255,255,255,.95),inset -1px -1px 0 -.25px rgba(255,255,255,.45),inset 0 0 0 .6px rgba(255,255,255,.5),inset 0 0 16px rgba(255,255,255,.2),0 24px 48px -30px rgba(40,20,80,.32);
+ text-shadow:0 1px 1px rgba(255,255,255,.75),0 0 12px rgba(255,255,255,.5)}
+/* dock and mini player stay a bit denser for legibility over anything */
+html:not([data-theme=light]) .dock,html:not([data-theme=light]) .mini{background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.03)),rgba(10,10,18,.42)}
+html[data-theme=light] .dock,html[data-theme=light] .mini{background:linear-gradient(160deg,rgba(255,255,255,.62),rgba(255,255,255,.38))}
