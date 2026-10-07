@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Aarav HQ</title>
 <meta name="theme-color" content="#1a1240">
-<meta name="description" content="Aarav's Gang HQ: JEE physics, focus, goals and lore.">
+<meta name="description" content="Aarav HQ: focus timer, goals and music.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -26,16 +26,18 @@
 <main id="view" class="view"></main>
 <nav class="dock" id="dock">
   <a href="#home" data-t="home"><span>🏠</span><em>Home</em></a>
-  <a href="#problem" data-t="problem"><span>⚛️</span><em>Physics</em></a>
   <a href="#focus" data-t="focus"><span>⏱️</span><em>Focus</em></a>
   <a href="#goals" data-t="goals"><span>✅</span><em>Goals</em></a>
-  <a href="#lore" data-t="lore"><span>📜</span><em>Lore</em></a>
+  <a href="#music" data-t="music"><span>🎧</span><em>Music</em></a>
   <a href="#stats" data-t="stats"><span>📊</span><em>Stats</em></a>
   <a href="#settings" data-t="settings"><span>⚙️</span><em>More</em></a>
 </nav>
+<div id="ytWrap" class="ytwrap off"><div id="ytPlayer"></div></div>
+<div id="mini" class="mini hidden" role="region" aria-label="Mini player">
+  <img id="miniThumb" alt="" src="icons/icon-192.png"><div class="mt"><b id="miniTitle">Nothing playing</b><span id="miniSub">Aarav HQ Radio</span></div>
+  <button id="mPrev" aria-label="Previous">⏮</button><button id="mPlay" class="pp" aria-label="Play/Pause">▶</button><button id="mNext" aria-label="Next">⏭</button>
+</div>
 <div id="toast" class="toast"></div>
-<script src="problems.js"></script>
-<script src="lore.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
