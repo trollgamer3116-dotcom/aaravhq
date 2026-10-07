@@ -968,18 +968,18 @@ html[data-theme=light] .glass{background:linear-gradient(150deg,rgba(255,255,255
 html:not([data-theme=light]) .dock,html:not([data-theme=light]) .mini{background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.03)),rgba(10,10,18,.42)}
 html[data-theme=light] .dock,html[data-theme=light] .mini{background:linear-gradient(160deg,rgba(255,255,255,.62),rgba(255,255,255,.38))}
 
-/* ===== v4.3 living palette: A and B aurora layers crossfade over 60s, ping-pong (opacity only = compositor-cheap) ===== */
+/* ===== v4.3 living palette: A and B aurora layers crossfade over 5s, ping-pong (opacity only = compositor-cheap) ===== */
 :root{--b1:#331a72;--b2:#0c4f5e;--b3:#4b2a8c;--b4:#4a1d55}
-.aur.pa{animation:breathe 14s ease-in-out infinite alternate,palA 60s ease-in-out infinite alternate}
-.aur.pb{opacity:0;animation:breathe 14s ease-in-out infinite alternate,palB 60s ease-in-out infinite alternate}
+.aur.pa{animation:breathe 14s ease-in-out infinite alternate,palA 5s ease-in-out infinite alternate}
+.aur.pb{opacity:0;animation:breathe 14s ease-in-out infinite alternate,palB 5s ease-in-out infinite alternate}
 @keyframes palA{from{opacity:1}to{opacity:0}}
 @keyframes palB{from{opacity:0}to{opacity:1}}
 .aur.pb .a1{background:radial-gradient(closest-side,color-mix(in srgb,var(--b1) 85%,transparent),transparent)}
 .aur.pb .a2{background:radial-gradient(closest-side,color-mix(in srgb,var(--b2) 75%,transparent),transparent)}
 .aur.pb .a3{background:radial-gradient(closest-side,var(--b3),transparent)}
 .aur.pb .a4{background:radial-gradient(closest-side,color-mix(in srgb,var(--b4) 70%,transparent),transparent)}
-/* orbs crossfade too: a B-coloured skin on the same 60s ping-pong */
-.orb i::after{content:"";position:absolute;inset:0;border-radius:50%;opacity:0;animation:palB 60s ease-in-out infinite alternate;
+/* orbs crossfade too: a B-coloured skin on the same 5s ping-pong */
+.orb i::after{content:"";position:absolute;inset:0;border-radius:50%;opacity:0;animation:palB 5s ease-in-out infinite alternate;
  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.55),rgba(255,255,255,0) 18%),radial-gradient(circle at 70% 78%,color-mix(in srgb,var(--b3) 70%,transparent),transparent 45%),radial-gradient(circle at 40% 40%,color-mix(in srgb,var(--b2) 80%,#000),color-mix(in srgb,var(--b1) 90%,#000) 60%,#04040a 100%);
  box-shadow:inset -30px -40px 80px rgba(0,0,0,.55),inset 20px 20px 60px rgba(255,255,255,.08)}
 .orb.o2 i::after{background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.6),transparent 20%),radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--b3) 85%,#000),color-mix(in srgb,var(--b4) 80%,#000) 70%,#04040a)}
