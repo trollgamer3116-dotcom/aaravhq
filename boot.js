@@ -2,9 +2,25 @@
 'use strict';
 const mq=matchMedia('(prefers-color-scheme: light)');
 const THI={system:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>',light:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>',dark:'<svg viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/></svg>'};
-function applyTheme(){const t=S.settings.theme,eff=t==='system'?(mq.matches?'light':'dark'):t;const r=document.documentElement;r.dataset.theme=eff;r.dataset.tod=tod();$('#themeBtn').innerHTML=THI[t]||THI.system;$('#themeBtn').title='Theme: '+t}
+function applyTheme(){const t=S.settings.theme,eff=t==='system'?(mq.matches?'light':'dark'):t;const r=document.documentElement;r.dataset.theme=eff;r.dataset.tod=tod();try{bgPalette()}catch(e){}$('#themeBtn').innerHTML=THI[t]||THI.system;$('#themeBtn').title='Theme: '+t}
 mq.addEventListener&&mq.addEventListener('change',()=>S.settings.theme==='system'&&applyTheme());
-setInterval(()=>{document.documentElement.dataset.tod=tod()},60000);
+// ---------- living palette: time of day picks an A/B pair; CSS crossfades A<->B every 60s ----------
+// anchors (IST minutes) -> [A: a1..a4, B: b1..b4]. Dark, restrained; big hue gap between A and B.
+const PAL={night:[['#1b2170','#3a1f5e','#7a2f62','#0f3560'],['#0b4a5c','#45207e','#2a5a8a','#5a1d4e']],
+ dawn:[['#5e2a58','#b4557a','#ff9a6a','#3a3a8f'],['#9a4a2c','#6a4aa0','#ffc27a','#2f4a8f']],
+ day:[['#1f4fb8','#119fa8','#ffb15c','#4537b0'],['#0f7a86','#2a5fc8','#7ad0b0','#2c3fa8']],
+ gold:[['#8a3426','#c8602a','#ffb04a','#5a2a6a'],['#8a2a5e','#9a3a8a','#ff8a6a','#2a3a8a']],
+ eve:[['#3b2a8f','#6a2fa0','#ff6a3a','#1d3f8a'],['#14508a','#9a2a5a','#d06a8a','#2a2a7a']]};
+const PAN=[[60,'night'],[330,'night'],[420,'dawn'],[540,'day'],[930,'day'],[1080,'gold'],[1200,'eve'],[1290,'eve'],[1500,'night']];
+const hx=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)),xh=a=>'#'+a.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
+const mixc=(a,b,t)=>{const p=hx(a),q=hx(b);return xh(p.map((v,i)=>v+(q[i]-v)*t))};
+function istMin(){const [h,m]=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()).split(':').map(Number);return (h%24)*60+m}
+function bgPalette(){const r=document.documentElement;let m=istMin();if(m<60)m+=1440;let k=0;while(k<PAN.length-2&&m>=PAN[k+1][0])k++;
+ const [m0,p0]=PAN[k],[m1,p1]=PAN[k+1],t0=Math.max(0,Math.min(1,(m-m0)/((m1-m0)||1))),t=t0*t0*(3-2*t0),light=r.dataset.theme==='light';
+ ['a','b'].forEach((s,j)=>{for(let i=0;i<4;i++){let c=mixc(PAL[p0][j][i],PAL[p1][j][i],t);if(light)c=mixc(c,'#ffffff',.42);r.style.setProperty('--'+s+(i+1),c)}})}
+bgPalette();
+setInterval(()=>{document.documentElement.dataset.tod=tod();bgPalette()},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)bgPalette()});
 $('#themeBtn').onclick=()=>{const o=['system','light','dark'];S.settings.theme=o[(o.indexOf(S.settings.theme)+1)%3];save();
  const go=()=>{applyTheme();if(location.hash==='#settings')render()};if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(go);else go();toast('Theme: '+S.settings.theme[0].toUpperCase()+S.settings.theme.slice(1))};
 applyTheme();applyWxMood();
@@ -40,7 +56,7 @@ render();
  if(seen||RMQ.matches){s.classList.add('quick');out();return}
  Promise.race([document.fonts?document.fonts.ready:Promise.resolve(),new Promise(r=>setTimeout(r,1400))]).then(()=>setTimeout(out,Math.max(0,1150-performance.now())))})();
 // warm the offline font cache once the service worker controls the page (latin subsets only)
-function warmFonts(){try{if(!navigator.serviceWorker.controller||!navigator.onLine||localStorage.getItem('hq:fw')==='11')return;const l=document.querySelector('link[rel=stylesheet][href*="fonts.googleapis"]');if(!l)return;
- fetch(l.href,{mode:'cors'}).then(r=>r.ok?r.text():Promise.reject()).then(css=>Promise.all(css.split('/*').filter(b=>/^\s*latin(-ext)?\s*\*\//.test(b)).map(b=>(b.match(/url\((https:[^)]+)\)/)||[])[1]).filter(Boolean).map(u=>fetch(u,{mode:'cors'}).catch(()=>{})))).then(()=>{try{localStorage.setItem('hq:fw','11')}catch(e){}}).catch(()=>{})}catch(e){}}
+function warmFonts(){try{if(!navigator.serviceWorker.controller||!navigator.onLine||localStorage.getItem('hq:fw')==='12')return;const l=document.querySelector('link[rel=stylesheet][href*="fonts.googleapis"]');if(!l)return;
+ fetch(l.href,{mode:'cors'}).then(r=>r.ok?r.text():Promise.reject()).then(css=>Promise.all(css.split('/*').filter(b=>/^\s*latin(-ext)?\s*\*\//.test(b)).map(b=>(b.match(/url\((https:[^)]+)\)/)||[])[1]).filter(Boolean).map(u=>fetch(u,{mode:'cors'}).catch(()=>{})))).then(()=>{try{localStorage.setItem('hq:fw','12')}catch(e){}}).catch(()=>{})}catch(e){}}
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('SW',e)));
  navigator.serviceWorker.addEventListener('controllerchange',()=>setTimeout(warmFonts,1500));setTimeout(warmFonts,5000)}

@@ -11,4 +11,4 @@ Live: https://trollgamer3116-dotcom.github.io/aaravhq/
 - **Home**: drag to reorder, hide and restore widgets (press and hold or Edit), nightly recap card with rings.
 - **Timers**: stopwatch with laps and multiple countdown timers.
 
-Files: `index.html`, `styles.css`, `app.js` (core + views), `news.js`, `music.js`, `search.js`, `fx.js` (motion), `boot.js`, `sw.js` (cache `aaravhq-v11`).
+Files: `index.html`, `styles.css`, `app.js` (core + views), `news.js`, `music.js`, `search.js`, `fx.js` (motion), `boot.js`, `sw.js` (cache `aaravhq-v12`).
