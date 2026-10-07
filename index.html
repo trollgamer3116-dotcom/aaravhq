@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Aarav HQ</title>
-<meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f2f2f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#06070b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#e9e6f2" media="(prefers-color-scheme: light)">
 <script>try{var t=(JSON.parse(localStorage.getItem("aaravhq:v1")||"{}").settings||{}).theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;else if(matchMedia("(prefers-color-scheme: light)").matches)document.documentElement.dataset.theme="light"}catch(e){}</script>
-<meta name="description" content="Aarav HQ: focus timer, goals and music.">
+<meta name="description" content="Aarav HQ: clock, weather, calendar, news, music, focus, goals, notes and habits.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -16,34 +16,61 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Aarav HQ">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="mesh" aria-hidden="true"><div class="glow"></div></div>
-<header class="top">
-  <div class="brand"><img src="icons/icon-192.png" alt=""><span>Aarav <b>HQ</b></span></div>
-  <div class="tops"><div class="pill" id="streakPill">0</div><button class="iconbtn" id="themeBtn" aria-label="Theme" title="Theme">◐</button><button class="iconbtn acc" id="qcBtn" aria-label="Quick capture" title="Quick capture">+</button></div>
+<div class="bg" aria-hidden="true">
+  <div class="aur"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i></div>
+  <div class="orb"><i></i></div><div class="orb o2"><i></i></div>
+  <div class="wxfx" id="wxfx"></div>
+  <div class="grain"></div><div class="vig"></div>
+</div>
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="lg-pill" x="0" y="0" width="100%" height="100%" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+    <feImage id="map-pill" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="m"/>
+    <feDisplacementMap in="SourceGraphic" in2="m" scale="0.07" xChannelSelector="R" yChannelSelector="G" result="r"/>
+    <feDisplacementMap in="SourceGraphic" in2="m" scale="0.064" xChannelSelector="R" yChannelSelector="G" result="g"/>
+    <feDisplacementMap in="SourceGraphic" in2="m" scale="0.058" xChannelSelector="R" yChannelSelector="G" result="b"/>
+    <feColorMatrix in="r" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="rr"/>
+    <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="gg"/>
+    <feColorMatrix in="b" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="bb"/>
+    <feBlend in="rr" in2="gg" mode="screen" result="rg"/><feBlend in="rg" in2="bb" mode="screen"/>
+  </filter>
+  <filter id="lg-card" x="0" y="0" width="100%" height="100%" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+    <feImage id="map-card" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="m"/>
+    <feDisplacementMap in="SourceGraphic" in2="m" scale="0.035" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<header class="top" id="top">
+  <div class="bar"><span class="barglass lg pillglass" aria-hidden="true"></span>
+    <a class="brand tap" href="#home"><span class="mark">A</span><span class="bn">Aarav<i>HQ</i></span></a>
+    <span class="barclock" id="barClock"></span>
+    <div class="tops"><button class="iconbtn tap" id="themeBtn" aria-label="Theme" title="Theme"></button><button class="iconbtn acc tap" id="qcBtn" aria-label="Quick capture" title="Quick capture"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+  </div>
 </header>
 <main id="view" class="view"></main>
-<nav class="dock" id="dock">
-  <a href="#home" data-t="home"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><em>Home</em></a>
-  <a href="#plan" data-t="plan"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><em>Plan</em></a>
-  <a href="#focus" data-t="focus"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg><em>Focus</em></a>
-  <a href="#music" data-t="music"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><em>Music</em></a>
-  <a href="#more" data-t="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg><em>More</em></a>
+<nav class="dock lg pillglass" id="dock">
+  <span class="dockblob" id="dockBlob" aria-hidden="true"></span>
+  <a href="#home" data-t="home" class="tap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.2 12 4l8 6.2V19a1.5 1.5 0 0 1-1.5 1.5H15v-5.5H9v5.5H5.5A1.5 1.5 0 0 1 4 19z"/></svg><em>Home</em></a>
+  <a href="#cal" data-t="cal" class="tap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="4"/><path d="M3.5 10h17M8.5 3v4M15.5 3v4"/><circle cx="12" cy="15" r="1.2" class="dotfill"/></svg><em>Calendar</em></a>
+  <a href="#news" data-t="news" class="tap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3.5"/><path d="M7.5 9h5M7.5 12.5h9M7.5 16h9"/><rect x="14.5" y="7.6" width="2.4" height="2.4" rx=".6" class="dotfill"/></svg><em>News</em></a>
+  <a href="#music" data-t="music" class="tap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/></svg><em>Music</em></a>
+  <a href="#more" data-t="more" class="tap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="3.25"/></svg><em>More</em></a>
 </nav>
 <div id="ytWrap" class="ytwrap off"><div id="ytPlayer"></div></div>
-<div id="mini" class="mini hidden" role="region" aria-label="Mini player">
+<div id="mini" class="mini lg pillglass hidden" role="region" aria-label="Mini player">
   <img id="miniThumb" alt="" src="icons/icon-192.png"><div class="mt"><b id="miniTitle">Nothing playing</b><span id="miniSub">Aarav HQ Radio</span></div>
   <button id="mPrev" aria-label="Previous"><svg viewBox="0 0 24 24" class="gi"><path d="M6 5v14M19 5 9 12l10 7z"/></svg></button><button id="mPlay" class="pp" aria-label="Play/Pause"><svg viewBox="0 0 24 24" class="gi f"><path d="M7 4.5v15l12.5-7.5z"/></svg></button><button id="mNext" aria-label="Next"><svg viewBox="0 0 24 24" class="gi"><path d="M18 5v14M5 5l10 7-10 7z"/></svg></button>
 </div>
 <div class="scrim" id="scrim"></div>
-<div class="sheet glass" id="sheet" role="dialog" aria-label="Quick capture">
+<div class="sheet lg pillglass" id="sheet" role="dialog" aria-label="Quick capture">
   <div class="row" style="justify-content:space-between;margin-bottom:14px"><h2 style="margin:0">Quick capture</h2><div class="seg" id="qcSeg"><button data-k="goal" class="on">Goal</button><button data-k="note">Note</button></div></div>
   <form id="qcForm"><textarea id="qcText" placeholder="What's on your mind?" rows="3"></textarea><div class="row" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn ghost" id="qcCancel">Cancel</button><button class="btn pri">Save</button></div></form>
 </div>
 <div id="toast" class="toast"></div>
 <script src="app.js"></script>
+<script src="fx.js"></script>
 </body>
 </html>
