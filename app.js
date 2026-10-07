@@ -110,7 +110,7 @@ function homeWidgets(){const t=today(),td=S.todos.filter(x=>x.date===t),dn=td.fi
  const pins=S.notes.filter(n=>n.pinned).concat(S.notes.filter(n=>!n.pinned).sort((a,b)=>b.updated-a.updated)).slice(0,3);
  const rates=fxCache(),usd=rates&&rates.rates.USD?(1/rates.rates.USD):null;const C=2*Math.PI*36,off=C*(1-Math.min(1,fm/goal));
  const d=vd(),np=d&&d.video_id,lastR=S.music.recent[0];
- const fy=forYou(),top=fy&&fy.slice(0,3);homeNews=fy||[];
+ const fy=forYou()?.sort((a,b)=>(b.date||0)-(a.date||0)),top=fy&&fy.slice(0,3);homeNews=fy||[];
  const runT=S.timers.filter(x=>!x.done).slice(0,2);
  return{
   recap:recapWidget(),
@@ -145,8 +145,8 @@ V.home=()=>{const t=today(),td=S.todos.filter(x=>x.date===t),dn=td.filter(x=>x.d
  <div class="hfoot"><div class="htray" id="hTray" ${homeEditing?'':'hidden'}>${trayHTML()}</div><button class="btn ghost sm tap" id="homeEditBtn">${homeEditing?'Done':ic('grid')+' Edit widgets'}</button></div>`};
 V.home.ptr=()=>Promise.all([loadWeather(true),loadNews('ai'),loadNews('games'),loadNews('movies')]).then(()=>{if(document.body.dataset.view==='home')render()});
 V.home.after=()=>{loadWeather();if(!fxCache()||Date.now()-fxCache().at>6*36e5)loadFx();
- const stale=['ai','games','movies'].filter(k=>{const n=newsCache(k);return !n||Date.now()-n.at>30*6e4});
- if(stale.length){const had=!!(homeNews&&homeNews.length);Promise.all(stale.map(k=>loadNews(k))).then(r=>{if(r.some(Boolean)&&!had&&document.body.dataset.view==='home'&&!homeEditing&&!hDrag){const w=document.querySelector('[data-w=news]');if(w){const W=homeWidgets();w.innerHTML=W.news.inner+`<button class="wx" data-hide="news" aria-label="Hide For you" tabindex="-1">−</button>`;FX.refresh()}}})}
+ const stale=['ai','games','movies'];
+ if(stale.length){Promise.all(stale.map(k=>loadNews(k))).then(r=>{if(r.some(Boolean)&&document.body.dataset.view==='home'&&!homeEditing&&!hDrag){const w=document.querySelector('[data-w=news]');if(w){const W=homeWidgets();w.innerHTML=W.news.inner+`<button class="wx" data-hide="news" aria-label="Hide For you" tabindex="-1">−</button>`;FX.refresh()}}})}
  const g=$('#bento');
  g.addEventListener('click',e=>{if(homeEditing||hDrag||Date.now()-hDropAt<400){const hb=e.target.closest('[data-hide]');e.preventDefault();e.stopPropagation();if(hb&&homeEditing)hideWidget(hb.dataset.hide);return}
   const n=e.target.closest('[data-hn]');if(n){openReader(homeNews,+n.dataset.hn,n.querySelector('img'));return}

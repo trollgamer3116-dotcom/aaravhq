@@ -1026,3 +1026,24 @@ body[data-view=news] .phead{margin-bottom:0}
 @media(max-width:600px){.news-controls{gap:8px}.news-search{flex-basis:100%}.news-controls select{flex:1}.news-lead{gap:14px}.lead-side{grid-template-columns:1fr}.lead-side .ncard{flex-direction:row}.lead-side .ncard .im{width:32%;aspect-ratio:auto}.lead-side .ncat{display:none}.lead-side .ncard h4{font-size:16px;-webkit-line-clamp:3}.nfeat .tx{padding:24px}.nfeat{min-height:400px}.newsgrid.compact .ncard .im{width:100px}.newsgrid.compact .ncat{display:none}.newsgrid.compact .ncard .bd{padding:14px}.newsgrid.compact .ncard h4{font-size:15px}.newsgrid{gap:14px}}
 @media(hover:hover){.ncard:hover{border-color:color-mix(in srgb,var(--ember) 40%,var(--line));box-shadow:0 12px 32px #0002}}
 @media(prefers-reduced-motion:reduce){.ncard,.nfeat img{transition:none}}
+/* Fresh newsroom: clear lenses and spring touch pressure. */
+.news-status{min-height:20px;margin:12px 4px 0;color:var(--tx2);font-size:12px;display:flex;align-items:center;gap:8px}
+.news-status:empty{display:none}
+.news-status.fetching::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--ember);box-shadow:0 0 12px var(--ember);animation:newsPulse 1.3s ease-in-out infinite}
+#nRef.fetching .gi{animation:newsSpin 1s linear infinite}
+.news-search,.news-layout,.news-controls select{background:linear-gradient(140deg,#ffffff12,#ffffff03);-webkit-backdrop-filter:blur(8px) saturate(170%);backdrop-filter:blur(8px) saturate(170%);box-shadow:inset 0 1px 0 #ffffff40,0 8px 28px -20px #0006}
+html[data-theme=light] .news-search,html[data-theme=light] .news-layout,html[data-theme=light] .news-controls select{background:linear-gradient(140deg,#ffffff45,#ffffff12);box-shadow:inset 0 1px 0 #ffffffc0,0 8px 28px -20px #38245e55}
+.glass::after{background:radial-gradient(240px circle at var(--mx,30%) var(--my,20%),#ffffff1c,transparent 65%),linear-gradient(135deg,#ffffff12,transparent 25%,transparent 75%,#ffffff08)}
+.ncard{border-color:color-mix(in srgb,var(--line) 65%,transparent);border-radius:26px}
+.ncard .im,.ncard .bd{background:transparent}
+.ncard .im img{transition:scale .8s cubic-bezier(.2,.8,.2,1)}
+.tap,.btn,.iconbtn,.seg button,.news-layout button,.dock a{transition:scale .55s cubic-bezier(.22,1.5,.4,1),filter .25s;transform-origin:var(--press-x,50%) var(--press-y,50%)}
+.tap:active{transform:none}
+.liquid-pressed{scale:.965;filter:brightness(1.08);transition:scale .12s ease-out!important}
+.liquid-pressed .im img{scale:1.035}
+.iconbtn.liquid-pressed,.btn.liquid-pressed,.seg button.liquid-pressed,.news-layout button.liquid-pressed,.dock a.liquid-pressed{scale:.9}
+.news-layout button[aria-pressed=true]{box-shadow:inset 0 1px 0 #ffffff60,0 4px 14px -6px #0004}
+@keyframes newsSpin{to{transform:rotate(360deg)}}
+@keyframes newsPulse{50%{opacity:.4;scale:.7}}
+@media(hover:hover){.ncard:hover .im img{scale:1.035}}
+@media(prefers-reduced-motion:reduce){.tap,.btn,.iconbtn,.seg button,.news-layout button,.dock a,.ncard .im img{transition:none}.liquid-pressed{scale:1;filter:none}#nRef.fetching .gi,.news-status.fetching::before{animation:none}}

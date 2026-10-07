@@ -45,6 +45,12 @@ document.addEventListener('pointerdown',e=>{const t=e.target.closest('.tap,.btn,
  if(RM.matches)return;const r=t.getBoundingClientRect();const host=getComputedStyle(t).position==='static'?null:t;if(!host)return;
  const s=document.createElement('span');s.className='rip';s.style.left=(e.clientX-r.left)+'px';s.style.top=(e.clientY-r.top)+'px';if(getComputedStyle(t).overflow!=='hidden')t.style.overflow='hidden';t.appendChild(s);setTimeout(()=>s.remove(),720)},{passive:true});
 // --- segmented-control knob (stretches as it travels) + liquid dock blob
+let pressure=null;
+function releasePressure(){if(!pressure)return;pressure.el.classList.remove('liquid-pressed');pressure=null}
+document.addEventListener('pointerdown',e=>{releasePressure();if(RM.matches||e.button>0)return;const el=e.target.closest('.tap,.btn,.iconbtn,.seg button,.news-layout button,.dock a');if(!el||el.closest('.editing'))return;const r=el.getBoundingClientRect();el.style.setProperty('--press-x',((e.clientX-r.left)/r.width*100)+'%');el.style.setProperty('--press-y',((e.clientY-r.top)/r.height*100)+'%');el.classList.add('liquid-pressed');pressure={el,x:e.clientX,y:e.clientY}},{passive:true});
+document.addEventListener('pointermove',e=>{if(pressure&&Math.hypot(e.clientX-pressure.x,e.clientY-pressure.y)>12)releasePressure()},{passive:true});
+['pointerup','pointercancel','scroll'].forEach(type=>document.addEventListener(type,releasePressure,{passive:true}));
+addEventListener('blur',releasePressure);
 function seg(){document.querySelectorAll('.seg').forEach(g=>{let k=g.querySelector('.knob');if(!k){k=document.createElement('span');k.className='knob';g.prepend(k)}const on=g.querySelector('button.on');if(!on){k.style.opacity=0;return}
  const x=on.offsetLeft-4,w=on.offsetWidth,px=+(k.dataset.x||x);k.style.opacity=1;k.style.width=w+'px';k.style.transform=`translateX(${x}px)`;k.style.left='4px';
  if(k.dataset.x&&Math.abs(px-x)>2&&!RM.matches&&k.animate)k.animate([{scale:'1 1'},{scale:'1.14 .9',offset:.35},{scale:'.98 1.03',offset:.75},{scale:'1 1'}],{duration:520,easing:'ease-out'});k.dataset.x=x})}
