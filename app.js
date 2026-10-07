@@ -81,28 +81,28 @@ function ctxLine(){const w=S.wx&&S.wx.cur,t=today(),bl=blocksFor(t),hm=nowHM(),n
  if(nx)s+=` Next up: <b>${esc(nx.title)}</b> at ${nx.start}.`;else if(bl.length===0&&h<20)s+=' Your calendar is wide open.';
  return s}
 const fmtHM=d=>({h:String(d.getHours()).padStart(2,'0'),m:String(d.getMinutes()).padStart(2,'0'),s:String(d.getSeconds()).padStart(2,'0')});
-function heroClock(){const c=fmtHM(new Date());return `<span class="hh">${c.h}</span><span class="mm"><span class="col" aria-hidden="true"><i></i><i></i></span>${c.m}<span class="ss" id="hss">${c.s}</span></span>`}
+function heroClock(){const c=fmtHM(new Date());return `<span class="hh">${c.h}</span><span class="mm"><span class="col" aria-hidden="true"><i></i><i></i></span><span class="md">${c.m}</span><span class="ss" id="hss">${c.s}</span></span>`}
 const EMPTY=(g,t,p,extra='')=>`<div class="empty"><div class="glyph">${g}</div><div class="ed">${t}</div><p>${p}</p>${extra}</div>`;
 // ---------- HOME: hero + reorderable widgets ----------
 const WDEF=['recap','weather','today','focus','habits','music','news','goals','notes','tools'];
 const WNAMES={recap:'Daily recap',weather:'Weather',today:'Today',focus:'Focus',habits:'Habits',music:'Music',news:'For you',goals:'Goals',notes:'Notes',tools:'Tools'};
 function homeOrder(){const h=S.home;let o=(Array.isArray(h.order)?h.order:[]).filter((x,i,a)=>WDEF.includes(x)&&a.indexOf(x)===i);WDEF.forEach(x=>{if(!o.includes(x))o.splice(Math.min(WDEF.indexOf(x),o.length),0,x)});h.order=o;if(!Array.isArray(h.hidden))h.hidden=[];h.hidden=h.hidden.filter(x=>WDEF.includes(x));return o}
 const ringC=r=>2*Math.PI*r;
-function recapData(){const t=today(),td=S.todos.filter(x=>x.date===t),hl=S.habitLog[t]||{};
+function recapData(day){const t=day||today(),td=S.todos.filter(x=>x.date===t),hl=S.habitLog[t]||{};
  return{t,fm:S.focus[t]||0,goal:120,dn:td.filter(x=>x.done).length,tg:td.length,open:td.filter(x=>!x.done).length,hd:S.habits.filter(x=>hl[x.id]).length,th:S.habits.length,ev:blocksFor(t).length,
   nt:S.notes.filter(n=>n.created&&fmt.format(new Date(n.created))===t).length,rd:(S.readLog||{})[t]||0,sg:((S.music||{}).log||{})[t]||0}}
-function recapWidget(){const r=recapData(),h=istHour(),eve=h>=19||h<4;
+function recapWidget(){const h=istHour(),late=h<4,eve=h>=19||late,r=recapData(late?addDays(today(),-1):today());
  const fp=Math.min(1,r.fm/r.goal),gp=r.tg?r.dn/r.tg:0,hp=r.th?r.hd/r.th:0;const parts=[fp].concat(r.tg?[gp]:[],r.th?[hp]:[]),avg=parts.reduce((a,b)=>a+b,0)/parts.length;
  const head=eve?(avg>=.9?'A full-circle day.':avg>=.6?'Solid work today.':avg>=.3?'A gentle day. That counts too.':(r.fm||r.dn||r.hd)?'Small steps still count.':'Tomorrow is a clean slate.')
   :(avg>=.9?'Already crushing it.':avg>=.5?'Good momentum.':h<12?'The day is wide open.':'Plenty of day left.');
  const ring=(rad,p,col,k)=>{const C=ringC(rad);return `<circle class="rbg" cx="60" cy="60" r="${rad}"/><circle class="rg" cx="60" cy="60" r="${rad}" style="stroke:${col};--c:${C.toFixed(1)};--o:${(C*(1-Math.min(1,p))).toFixed(1)};transition-delay:${.15+k*.15}s" transform="rotate(-90 60 60)"/>`};
  const extras=[[r.ev,'event'],[r.nt,'note'],[r.rd,'story','stories'],[r.sg,'song']].filter(x=>x[0]).map(([n,a,pl])=>`${n} ${n===1?a:(pl||a+'s')}`);
- let tom='';if(eve){const w=S.wx&&S.wx.daily&&S.wx.daily[1],tb=blocksFor(addDays(r.t,h<4?0:1)).filter(b=>true)[0];
+ let tom='';if(eve){const nd=addDays(r.t,1),w=S.wx&&S.wx.daily&&S.wx.daily.find(x=>x.d===nd),tb=blocksFor(nd)[0];
   tom=`<div class="rtom"><span class="kicker plain">Tomorrow</span><div class="rtrow">${w?`<span class="rti">${wIcon(w.code,true)}<b>${Math.round(w.hi)}°</b><em>${Math.round(w.lo)}°</em></span>`:''}<span class="rti grow ell">${tb?`<b>${tb.allDay?'All day':tb.start}</b> ${esc(tb.title)}`:'No events yet'}</span>${r.open?`<span class="rti"><b>${r.open}</b> goal${r.open>1?'s':''} carry over</span>`:''}</div></div>`}
  return{cls:'s2 d6 recap'+(eve?' eve':''),inner:`${eve?'<i class="rstars" aria-hidden="true"></i>':''}<div class="rwrap"><svg class="rings" viewBox="0 0 120 120" aria-hidden="true">${ring(52,fp,'var(--ember)',0)}${ring(40,gp,'#ffb547',1)}${ring(28,hp,'#5fe3b0',2)}</svg>
   <div class="rtx"><div class="kicker">${eve?'Tonight\u2019s recap':'Today so far'}</div><div class="rhead">${head}</div>
   <div class="rleg"><span><i style="background:var(--ember)"></i>Focus <b>${r.fm}</b>/${r.goal}m</span>${r.tg?`<span><i style="background:#ffb547"></i>Goals <b>${r.dn}</b>/${r.tg}</span>`:''}${r.th?`<span><i style="background:#5fe3b0"></i>Habits <b>${r.hd}</b>/${r.th}</span>`:''}</div>
-  <div class="small muted rext">${extras.length?extras.join(' · '):'Nothing logged yet today.'}</div></div></div>${tom}`}}
+  <div class="small muted rext">${extras.length?extras.join(' · '):(late?'Nothing else logged.':'Nothing logged yet today.')}</div></div></div>${tom}`}}
 function homeWidgets(){const t=today(),td=S.todos.filter(x=>x.date===t),dn=td.filter(x=>x.done).length,fm=S.focus[t]||0,goal=120;
  const bl=blocksFor(t),hm=nowHM(),up=bl.filter(b=>b.allDay||b.end>hm).slice(0,4);
  const hl=S.habitLog[t]||{},hd=S.habits.filter(x=>hl[x.id]).length;
@@ -188,8 +188,11 @@ setInterval(()=>{const c=document.getElementById('bigClock');if(c){const f=fmtHM
 function toggleHabit(id,d){const l=S.habitLog[d]||(S.habitLog[d]={});if(l[id])delete l[id];else l[id]=true;save()}
 // ---------- GENERIC SHEET ----------
 const gs=document.createElement('div');gs.className='sheet lg pillglass';gs.id='gsheet';gs.setAttribute('role','dialog');document.body.appendChild(gs);
-function openSheet(html,mount){gs.innerHTML=html;gs.classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');mount&&mount(gs);FX.refresh()}
-function closeSheets(){gs.classList.remove('on');$('#sheet').classList.remove('on');$('#scrim').classList.remove('on');document.body.classList.remove('qc')}
+let sheetOpener=null;
+function openSheet(html,mount){if(!document.body.classList.contains('qc'))sheetOpener=document.activeElement;gs.innerHTML=html;gs.classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');mount&&mount(gs);FX.refresh()}
+function closeSheets(){const wasOpen=document.body.classList.contains('qc');gs.classList.remove('on');$('#sheet').classList.remove('on');$('#scrim').classList.remove('on');document.body.classList.remove('qc');
+ const a=document.activeElement;if(a&&a!==document.body&&(gs.contains(a)||$('#sheet').contains(a)))a.blur();
+ if(wasOpen){const o=sheetOpener;sheetOpener=null;if(o&&o!==document.body&&o.isConnected&&!gs.contains(o)&&!$('#sheet').contains(o)&&o.offsetParent!==null)try{o.focus({preventScroll:true})}catch(e){}}}
 // ---------- CALENDAR ----------
 let calY,calM,calSel,calDir='';
 const ymd=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;

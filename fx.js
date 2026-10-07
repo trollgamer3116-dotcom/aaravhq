@@ -18,10 +18,13 @@ if(isChromium&&!RM.matches){try{
 // --- reactive light: pointer, touch, tilt and scroll steer one virtual light source
 const L={x:innerWidth*.3,y:-80,tx:innerWidth*.3,ty:-80};let vis=new Set(),raf=0;
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?vis.add(e.target):vis.delete(e.target)),{rootMargin:'80px'});
-function frame(){raf=0;L.x+=(L.tx-L.x)*.18;L.y+=(L.ty-L.y)*.18;
- vis.forEach(el=>{const r=el.getBoundingClientRect();el.style.setProperty('--mx',(L.x-r.left).toFixed(0)+'px');el.style.setProperty('--my',(L.y-r.top).toFixed(0)+'px')});
+let scrolling=false,scrollT=0;
+function frame(){raf=0;if(scrolling)return;L.x+=(L.tx-L.x)*.18;L.y+=(L.ty-L.y)*.18;
+ // read every rect first, then write: no layout thrash
+ const els=[...vis],rs=els.map(el=>el.getBoundingClientRect());
+ els.forEach((el,k)=>{el.style.setProperty('--mx',(L.x-rs[k].left).toFixed(0)+'px');el.style.setProperty('--my',(L.y-rs[k].top).toFixed(0)+'px')});
  if(Math.abs(L.tx-L.x)>.5||Math.abs(L.ty-L.y)>.5)kick()}
-const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};
+const kick=()=>{if(!raf&&!scrolling)raf=requestAnimationFrame(frame)};
 addEventListener('pointermove',e=>{L.tx=e.clientX;L.ty=e.clientY;kick()},{passive:true});
 addEventListener('pointerdown',e=>{L.tx=e.clientX;L.ty=e.clientY;kick()},{passive:true});
 let tiltOn=false;function onTilt(e){if(e.gamma==null)return;tiltOn=true;L.tx=innerWidth*(.5+Math.max(-1,Math.min(1,e.gamma/35))*.6);L.ty=innerHeight*(.25+Math.max(-1,Math.min(1,(e.beta-45)/40))*.5);kick()}
@@ -30,9 +33,10 @@ addEventListener('click',function ask(){if(window.DeviceOrientationEvent&&typeof
 // --- scroll: header morph, hero parallax, light drift
 const top=document.getElementById('top');let lastY=-1,sraf=0;
 function onScroll(){sraf=0;const y=scrollY;if(y===lastY)return;lastY=y;top.classList.toggle('scrolled',y>36);
- if(!RM.matches){const px=document.querySelector('.hero .px');if(px&&y<900){px.style.transform=`translate3d(0,${(y*.38).toFixed(1)}px,0) scale(${(1-y/3000).toFixed(4)})`;px.style.opacity=Math.max(0,1-y/520).toFixed(3)}}
+ if(!RM.matches){const px=document.querySelector('.hero .px');if(px&&y<900){px.style.transform=`translate3d(0,${(y*.38).toFixed(1)}px,0)`;px.style.opacity=Math.max(0,1-y/520).toFixed(3)}}
  if(!tiltOn&&matchMedia('(hover:none)').matches){L.tx=innerWidth*(.3+.4*Math.sin(y/600));L.ty=-60+((y/4)%200)}kick()}
-addEventListener('scroll',()=>{if(!sraf)sraf=requestAnimationFrame(onScroll)},{passive:true});
+// the specular light freezes while scrolling and catches up once scrolling stops
+addEventListener('scroll',()=>{if(!scrolling){scrolling=true;root.classList.add('scrolling')}clearTimeout(scrollT);scrollT=setTimeout(()=>{scrolling=false;root.classList.remove('scrolling');kick()},160);if(!sraf)sraf=requestAnimationFrame(onScroll)},{passive:true});
 // --- reveal on scroll
 const rio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const el=e.target;const d=+(el.dataset.d||0);setTimeout(()=>{el.classList.add('in');countUp(el)},d);rio.unobserve(el)}}),{threshold:.08,rootMargin:'0px 0px -6% 0px'});
 // --- taps: light ripple + haptic tick

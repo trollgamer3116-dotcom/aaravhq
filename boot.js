@@ -10,7 +10,7 @@ $('#themeBtn').onclick=()=>{const o=['system','light','dark'];S.settings.theme=o
 applyTheme();applyWxMood();
 let qcKind='goal';
 function qcOpen(k){if(k){qcKind=k;document.querySelectorAll('#qcSeg button').forEach(x=>x.classList.toggle('on',x.dataset.k===k));$('#qcText').placeholder=k==='goal'?'One thing that would make today a win…':'Capture a thought…'}qc(true)}
-function qc(open){if(open){$('#sheet').classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');setTimeout(()=>$('#qcText').focus(),120);FX.seg()}else closeSheets()}
+function qc(open){if(open){if(!document.body.classList.contains('qc'))sheetOpener=document.activeElement;$('#sheet').classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');setTimeout(()=>$('#qcText').focus(),120);FX.seg()}else closeSheets()}
 $('#qcBtn').onclick=()=>{if(document.body.classList.contains('qc'))closeSheets();else qc(true)};$('#scrim').onclick=closeSheets;$('#qcCancel').onclick=closeSheets;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.body.classList.contains('spot'))closeSheets()});
 document.querySelectorAll('#qcSeg button').forEach(b=>b.onclick=()=>{qcKind=b.dataset.k;document.querySelectorAll('#qcSeg button').forEach(x=>x.classList.toggle('on',x===b));FX.seg();$('#qcText').placeholder=qcKind==='goal'?'One thing that would make today a win…':'Capture a thought…'});
@@ -40,7 +40,7 @@ render();
  if(seen||RMQ.matches){s.classList.add('quick');out();return}
  Promise.race([document.fonts?document.fonts.ready:Promise.resolve(),new Promise(r=>setTimeout(r,1400))]).then(()=>setTimeout(out,Math.max(0,1150-performance.now())))})();
 // warm the offline font cache once the service worker controls the page (latin subsets only)
-function warmFonts(){try{if(!navigator.serviceWorker.controller||!navigator.onLine||localStorage.getItem('hq:fw')==='9')return;const l=document.querySelector('link[rel=stylesheet][href*="fonts.googleapis"]');if(!l)return;
- fetch(l.href,{mode:'cors'}).then(r=>r.ok?r.text():Promise.reject()).then(css=>Promise.all(css.split('/*').filter(b=>/^\s*latin(-ext)?\s*\*\//.test(b)).map(b=>(b.match(/url\((https:[^)]+)\)/)||[])[1]).filter(Boolean).map(u=>fetch(u,{mode:'cors'}).catch(()=>{})))).then(()=>{try{localStorage.setItem('hq:fw','9')}catch(e){}}).catch(()=>{})}catch(e){}}
+function warmFonts(){try{if(!navigator.serviceWorker.controller||!navigator.onLine||localStorage.getItem('hq:fw')==='10')return;const l=document.querySelector('link[rel=stylesheet][href*="fonts.googleapis"]');if(!l)return;
+ fetch(l.href,{mode:'cors'}).then(r=>r.ok?r.text():Promise.reject()).then(css=>Promise.all(css.split('/*').filter(b=>/^\s*latin(-ext)?\s*\*\//.test(b)).map(b=>(b.match(/url\((https:[^)]+)\)/)||[])[1]).filter(Boolean).map(u=>fetch(u,{mode:'cors'}).catch(()=>{})))).then(()=>{try{localStorage.setItem('hq:fw','10')}catch(e){}}).catch(()=>{})}catch(e){}}
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('SW',e)));
  navigator.serviceWorker.addEventListener('controllerchange',()=>setTimeout(warmFonts,1500));setTimeout(warmFonts,5000)}
