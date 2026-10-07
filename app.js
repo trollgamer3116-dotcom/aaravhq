@@ -135,12 +135,16 @@ function wFrame(id,w){const tag=w.tag||'section';return `<${tag} ${w.href?`href=
 function trayHTML(){const h=S.home.hidden;return h.length?`<span class="small muted">Hidden:</span>${h.map(id=>`<button class="chip tap" data-show="${id}">${ic('plus','gi')} ${WNAMES[id]}</button>`).join('')}`:'<span class="small muted">Long-press or drag a widget to move it. Tap − to hide one.</span>'}
 V.home=()=>{const t=today(),td=S.todos.filter(x=>x.date===t),dn=td.filter(x=>x.done).length,fm=S.focus[t]||0,hl=S.habitLog[t]||{},hd=S.habits.filter(x=>hl[x.id]).length;
  const W=homeWidgets(),ord=homeOrder().filter(id=>!S.home.hidden.includes(id));
- return `<section class="hero"><div class="px">
-  <div class="hdate"><b>●</b>${new Date().toLocaleDateString('en-IN',{weekday:'short'})} · ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})} · ${esc((S.wx&&S.wx.place)||S.settings.city.name.split(',')[0])}</div>
+ return `<section class="hero"><div class="hero-copy px">
+  <div class="kicker plain hero-eyebrow">AARAV HQ · YOUR PERSONAL SPACE</div>
+  <p class="greet">${greetHTML()}</p><h1 class="hero-title">Your world.<br><span>At a glance.</span></h1>
+  <p class="ctx" id="ctx">${ctxLine()}</p>
+  <div class="hero-actions"><a href="#news" class="btn pri tap">Explore your feed ${ic('chevR')}</a><a href="#music" class="btn ghost tap">Find your sound ${ic('chevR')}</a></div>
+  </div><div class="hero-time glass"><i class="clock-reflection" aria-hidden="true"></i><div class="clock-label"><span class="live-dot" aria-hidden="true"></span> RIGHT HERE. RIGHT NOW.</div>
   <div class="bigclock" id="bigClock" aria-label="Current time">${heroClock()}</div>
-  <h1 class="greet">${greetHTML()}</h1><p class="ctx" id="ctx">${ctxLine()}</p>
-  <div class="chips"><a href="#focus" class="hchip lg tap"><b>${fm}m</b> focused</a><a href="#goals" class="hchip lg tap"><b>${dn}/${td.length}</b> goals</a><a href="#habits" class="hchip lg tap"><b>${hd}/${S.habits.length}</b> habits</a></div></div>
-  <div class="scrollcue" aria-hidden="true"></div></section>
+  <div class="hdate">${new Date().toLocaleDateString('en-IN',{weekday:'long'})} · ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}<span>${esc((S.wx&&S.wx.place)||S.settings.city.name.split(',')[0])}</span></div>
+  <div class="chips"><a href="#focus" class="hchip tap"><b>${fm}m</b> focused</a><a href="#goals" class="hchip tap"><b>${dn}/${td.length}</b> goals</a><a href="#habits" class="hchip tap"><b>${hd}/${S.habits.length}</b> habits</a></div></div></section>
+ <div class="home-section"><div><div class="kicker plain">MADE FOR YOUR EVERYDAY</div><h2>A little of everything.<br><span>All in one place.</span></h2></div><a class="more-link tap" href="#more">Explore HQ ${ic('chevR')}</a></div>
  <div class="bento ${homeEditing?'editing':''}" id="bento">${ord.map(id=>wFrame(id,W[id])).join('')}</div>
  <div class="hfoot"><div class="htray" id="hTray" ${homeEditing?'':'hidden'}>${trayHTML()}</div><button class="btn ghost sm tap" id="homeEditBtn">${homeEditing?'Done':ic('grid')+' Edit widgets'}</button></div>`};
 V.home.ptr=()=>Promise.all([loadWeather(true),loadNews('ai'),loadNews('games'),loadNews('movies')]).then(()=>{if(document.body.dataset.view==='home')render()});

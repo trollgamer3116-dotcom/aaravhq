@@ -88,7 +88,7 @@ function grabbers(){document.querySelectorAll('.sheet').forEach(sh=>{if(!sh.quer
 function refresh(){for(const el of tracked){if(!el.isConnected){io.unobserve(el);tracked.delete(el);vis.delete(el)}}for(const el of reveals){if(!el.isConnected){rio.unobserve(el);reveals.delete(el)}}
  if(!MOBILE&&!RM.matches)document.querySelectorAll('.glass,.lg').forEach(el=>{if(!tracked.has(el)){tracked.add(el);io.observe(el)}});
  let i=0;document.querySelectorAll('#view .glass:not(.rv), #view .nfeat:not(.rv)').forEach(el=>el.classList.add('rv'));
- document.querySelectorAll('#view .rv:not(.in)').forEach(el=>{if(RM.matches||MOBILE){el.classList.add('in');return}const r=el.getBoundingClientRect();el.dataset.d=r.top<innerHeight?Math.min(i++*70,420):0;reveals.add(el);rio.observe(el)});
+ document.querySelectorAll('#view .rv:not(.in)').forEach(el=>{if(RM.matches){el.classList.add('in');return}const r=el.getBoundingClientRect();if(MOBILE&&r.top<innerHeight){el.classList.add('in');return}el.dataset.d=r.top<innerHeight?Math.min(i++*70,420):0;reveals.add(el);rio.observe(el)});
  document.querySelectorAll('#view .stg:not(.in)').forEach(el=>{[...el.children].forEach((c,k)=>c.style.setProperty('--i',Math.min(k,12)));if(RM.matches||MOBILE)el.classList.add('in');else{reveals.add(el);rio.observe(el)}});
  grabbers();seg();dock();lastY=-1;onScroll();kick()}
 window.FX={refresh,seg,dock};

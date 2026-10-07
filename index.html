@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>HQ</title>
-<meta name="theme-color" content="#06070b" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#e9e6f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#090b12" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
 <script>try{var t=(JSON.parse(localStorage.getItem("aaravhq:v1")||"{}").settings||{}).theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;else if(matchMedia("(prefers-color-scheme: light)").matches)document.documentElement.dataset.theme="light"}catch(e){}</script>
 <meta name="description" content="HQ: clock, weather, calendar, news, music, focus, goals, notes and habits.">
 <link rel="manifest" href="manifest.webmanifest">
@@ -17,8 +17,8 @@
 <meta name="apple-mobile-web-app-title" content="HQ">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Doto:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=17">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=18">
 <style>#splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:radial-gradient(120% 80% at 50% 30%,#1a1220 0%,#06070b 70%);transition:opacity .6s cubic-bezier(.4,0,.2,1),visibility .6s}html[data-theme=light] #splash{background:radial-gradient(120% 80% at 50% 30%,#fff 0%,#e9e6f2 70%)}#splash.out{opacity:0;visibility:hidden;pointer-events:none}#splash.quick{transition-duration:.25s}</style>
 </head>
 <body>
@@ -48,7 +48,7 @@
 </svg>
 <header class="top" id="top">
   <div class="bar"><span class="barglass lg pillglass" aria-hidden="true"></span>
-    <a class="brand tap" href="#home"><span class="mark">H</span><span class="bn"><i>HQ</i></span></a>
+    <a class="brand tap" href="#home" aria-label="Aarav HQ home"><span class="mark">H</span><span class="bn"><i>aarav<span>hq</span></i></span></a>
     <span class="barclock" id="barClock"></span>
     <div class="tops"><button class="iconbtn tap" id="searchBtn" aria-label="Search (⌘K)" title="Search  ⌘K"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button><button class="iconbtn tap" id="themeBtn" aria-label="Theme" title="Theme"></button><button class="iconbtn acc tap" id="qcBtn" aria-label="Quick capture" title="Quick capture"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
   </div>
@@ -113,11 +113,11 @@
     <div class="spot-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>
   </div>
 </div>
-<script src="app.js?v=17"></script>
-<script src="news.js?v=17"></script>
-<script src="music.js?v=17"></script>
-<script src="search.js?v=17"></script>
-<script src="fx.js?v=17"></script>
-<script src="boot.js?v=17"></script>
+<script src="app.js?v=18"></script>
+<script src="news.js?v=18"></script>
+<script src="music.js?v=18"></script>
+<script src="search.js?v=18"></script>
+<script src="fx.js?v=18"></script>
+<script src="boot.js?v=18"></script>
 </body>
 </html>
