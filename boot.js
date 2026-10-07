@@ -42,7 +42,7 @@ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest
 function navigate(){const to=viewOf(location.hash),from=document.body.dataset.view;closeSheets();if(typeof RDR!=='undefined'&&RDR.open){RDR.pushed=false;closeReader(true)}if(npOpen){npPushed=false;closeNP(true)}
  if(homeEditing&&to!=='home')homeEditing=false;document.body.classList.remove('hediting');
  const go=()=>{window.scrollTo({top:0,behavior:'instant'});render()};
- if(document.startViewTransition&&!RMQ.matches&&from&&from!==to&&!document.hidden){const fi=ORDER.indexOf(TABOF[from]||from),ti=ORDER.indexOf(TABOF[to]||to);const R=document.documentElement;R.dataset.vt=ti>fi?'fwd':ti<fi?'back':(TABOF[to]&&!TABOF[from]?'fwd':TABOF[from]&&!TABOF[to]?'back':'fwd');
+ if(document.startViewTransition&&!RMQ.matches&&!matchMedia('(pointer: coarse)').matches&&innerWidth>760&&from&&from!==to&&!document.hidden){const fi=ORDER.indexOf(TABOF[from]||from),ti=ORDER.indexOf(TABOF[to]||to);const R=document.documentElement;R.dataset.vt=ti>fi?'fwd':ti<fi?'back':(TABOF[to]&&!TABOF[from]?'fwd':TABOF[from]&&!TABOF[to]?'back':'fwd');
   const src=vtSrc&&vtSrc.isConnected?vtSrc:null;document.querySelectorAll('[style*="view-transition-name"]').forEach(x=>x.style.viewTransitionName='');if(src)src.style.viewTransitionName='shared';
   let t;try{t=document.startViewTransition(()=>{go();if(src){const g=document.querySelector('#view .ptitle');if(g)g.style.viewTransitionName='shared'}})}catch(err){delete R.dataset.vt;go();return}
   curVT=t;t.finished.catch(()=>{}).finally(()=>{if(curVT!==t)return;curVT=null;delete R.dataset.vt;document.querySelectorAll('[style*="view-transition-name"]').forEach(x=>x.style.viewTransitionName='')})}

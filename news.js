@@ -173,9 +173,10 @@ V.news=()=>`<section class="phead"><div class="row between" style="align-items:f
 function nPaint(){const b=document.getElementById('nBody');if(!b)return;b.innerHTML=newsBody();bindNews();FX.refresh()}
 async function newsFetch(force){const c=newsCat;if(c==='saved')return true;const cats=Object.keys(FEEDS);
  const need=cats.filter(k=>{const n=newsCache(k);return force||!n||Date.now()-n.at>20*6e4});if(!need.length)return true;
+ const signature=()=>JSON.stringify((listFor(c)||[]).map(i=>[i.id,i.title,i.img,i.date,i.desc]));const beforeView=signature(),oldErr=newsErr;
  const before=new Set((forYou()||[]).map(i=>i.id));newsRefreshing++;newsStatusPaint();
  try{const res=await Promise.all(need.map(k=>loadNews(k).then(ok=>{if(ok&&newsCat===c&&location.hash==='#news'&&document.querySelector('#nBody .skel'))nPaint();return ok})));
- const ok=res.some(Boolean),added=(forYou()||[]).filter(i=>!before.has(i.id)).length;newsErr=!ok;newsLastCheck=Date.now();newsStatus=ok?(added?`${added} new stories · freshly checked`:'You’re up to date · checked just now'):'Feeds unavailable · showing saved stories';if(ok&&res.some(x=>!x))newsStatus+=' · some sources unavailable';if(newsCat===c&&location.hash==='#news')nPaint();return ok
+ const ok=res.some(Boolean),added=(forYou()||[]).filter(i=>!before.has(i.id)).length;newsErr=!ok;newsLastCheck=Date.now();newsStatus=ok?(added?`${added} new stories · freshly checked`:'You’re up to date · checked just now'):'Feeds unavailable · showing saved stories';if(ok&&res.some(x=>!x))newsStatus+=' · some sources unavailable';if(newsCat===c&&location.hash==='#news'&&(signature()!==beforeView||oldErr!==newsErr||document.querySelector('#nBody .skel')))nPaint();return ok
  }finally{newsRefreshing--;newsStatusPaint()}}
 function bindNews(){const r=document.getElementById('nRetry');if(r)r.onclick=()=>{newsErr=false;nPaint();newsFetch(true)}}
 function toggleSave(it,btn){if(!it)return;const k=S.saved.findIndex(x=>x.id===it.id);let on;

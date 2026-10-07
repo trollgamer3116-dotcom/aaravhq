@@ -1047,3 +1047,26 @@ html[data-theme=light] .news-search,html[data-theme=light] .news-layout,html[dat
 @keyframes newsPulse{50%{opacity:.4;scale:.7}}
 @media(hover:hover){.ncard:hover .im img{scale:1.035}}
 @media(prefers-reduced-motion:reduce){.tap,.btn,.iconbtn,.seg button,.news-layout button,.dock a,.ncard .im img{transition:none}.liquid-pressed{scale:1;filter:none}#nRef.fetching .gi,.news-status.fetching::before{animation:none}}
+/* Performance: glass rims stay; avoid re-blurring moving scenery behind every card. */
+.glass,html.lgsvg .glass.lens{-webkit-backdrop-filter:none;backdrop-filter:none}
+.liquid-pressed{filter:none}
+.tap,.btn,.iconbtn,.seg button,.news-layout button,.dock a{transition:scale .55s cubic-bezier(.22,1.5,.4,1)}
+html.fx-hidden *,html.fx-hidden *::before,html.fx-hidden *::after{animation-play-state:paused!important}
+@media(max-width:760px),(pointer:coarse){
+ .bg .aur,.bg .aur i,.bg .orb,.bg .orb i::after,.bg .wxfx{animation:none!important;will-change:auto}
+ .bg .aur.pb{opacity:0}.bg .aur.pa{opacity:1}
+ .bg .aur{inset:0}
+ .glass::before,.glass::after{background:linear-gradient(135deg,#ffffff32,transparent 28%,transparent 76%,#ffffff12)}
+ .glass::after{box-shadow:none}
+ .glass{box-shadow:inset 0 1px 0 #ffffff45,inset 0 0 0 .5px var(--line),0 12px 24px -18px #0005}
+ .ncard .ncat,.news-search,.news-layout,.news-controls select,.bmk.lgb,.nfeat .ncat,.rd-bar .rbtn{-webkit-backdrop-filter:none;backdrop-filter:none}
+ .ncat{background:#181824b3}
+ .nfeat .sh{background:linear-gradient(180deg,#0000,#000d)}
+ .rip{animation-duration:.35s}
+ .np-bg img.amb{display:none}.np-bg i{animation:none!important}.np-bg #npAmb{filter:blur(18px);opacity:.3}
+ .s-rays,.s-cloud,.s-rain,.s-snow,.s-fog,.s-flash,.rstars{animation:none!important}
+ .dock,.mini,.sheet.lg{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+ .view.vin{animation-duration:.22s}
+ .rv,.stg{transition:none}
+}
+@media(prefers-reduced-motion:reduce){.tap,.btn,.iconbtn,.seg button,.news-layout button,.dock a{transition:none}.liquid-pressed{scale:1}}
