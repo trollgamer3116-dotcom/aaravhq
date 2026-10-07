@@ -90,6 +90,9 @@ function articleize(html,it){const r=RD.createElement('div');r.innerHTML=html;co
   if(t.length&&lt/t.length>.6&&t.length<500&&e.tagName!=='FIGURE'){e.remove();return}
   if(t.length<90&&/^(advertisement|skip to|share|copy link|image:|photo:|credit:|getty|listen to|this article|subscribe)/i.test(t)){e.remove();return}
   words+=(t.match(/\S+/g)||[]).length});
+ return tidyReader(r.innerHTML)}
+function tidyReader(html){const r=RD.createElement('div');r.innerHTML=html;const norm=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+ const seen=new Set();[...r.children].forEach(e=>{const t=e.textContent.replace(/\s+/g,' ').trim();if(/^(posts from (this|these)|follow topics and authors|follow this (topic|author)|by [\w .'-]{2,60}$)/i.test(t)){e.remove();return}if(t.length>60){const key=norm(t);if(seen.has(key)&&!e.querySelector('img'))e.remove();else seen.add(key)}});
  return r.innerHTML}
 function extractHTML(html){const d=new DOMParser().parseFromString(html,'text/html');
  for(const s of d.querySelectorAll('script[type="application/ld+json"]')){try{const j=JSON.parse(s.textContent);for(const o of [].concat(j['@graph']||j)){if(o&&typeof o.articleBody==='string'&&o.articleBody.length>1200)return o.articleBody.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(x=>'<p>'+esc(x)+'</p>').join('')}}catch(e){}}
@@ -120,7 +123,8 @@ function getArticle(it){if(artBusy[it.id])return artBusy[it.id];return artBusy[i
  if(res&&res.words>=120){rcPut(it.id,res);return res}return null})().finally(()=>{delete artBusy[it.id]})}
 
 // ---------- feeds ----------
-const mkItem=(o,c)=>{const it={id:hid(o.link),title:o.title,link:o.link,date:o.date||0,img:o.img||'',src:srcOf(o.link),cat:c,desc:(o.desc||'').slice(0,480)};
+function classifyStory(o,c){const u=o.link||'';if(c==='games'&&/\/(movies|tv|entertainment)\//i.test(u))return 'movies';return c}
+const mkItem=(o,c)=>{const it={id:hid(o.link),title:o.title,link:o.link,date:o.date||0,img:o.img||'',src:srcOf(o.link),cat:classifyStory(o,c),desc:(o.desc||'').slice(0,480)};
  if(o.html){const b=clean(o.html,o.link,false),p=pack(b,'feed');if(p.words>=250)it.body=b.slice(0,40000)}return it};
 async function viaRss2json(f,c){const r=await tfetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f),12000);if(!r.ok)throw 0;const j=await r.json();if(j.status!=='ok')throw 0;
  return j.items.map(i=>mkItem({title:txt(i.title),link:i.link,date:i.pubDate?Date.parse(i.pubDate.replace(' ','T')+'Z'):0,img:i.thumbnail||(i.enclosure&&(i.enclosure.link||i.enclosure.thumbnail))||firstImg(i.content)||firstImg(i.description),desc:txt(i.description),html:(i.content||'').length>(i.description||'').length?i.content:i.description},c))}
@@ -134,14 +138,15 @@ function loadNews(c){if(newsBusy[c])return newsBusy[c];return newsBusy[c]=(async
 const ago=t=>{if(!t)return '';const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+'m ago':m<1440?Math.round(m/60)+'h ago':Math.round(m/1440)+'d ago'};
 const isSaved=i=>!!i&&S.saved.some(x=>x.id===i.id);
 const isRead=i=>S.readIds.includes(i.id);
-function forYou(){const all=[],seen=new Set();['ai','games','movies'].forEach(c=>{const n=newsCache(c);if(n)n.items.forEach(i=>{if(seen.has(i.link))return;seen.add(i.link);all.push(Object.assign({},i,{cat:i.cat||c}))})});if(!all.length)return null;
+function forYou(){const all=[],seen=new Set();['ai','games','movies'].forEach(c=>{const n=newsCache(c);if(n)n.items.forEach(i=>{if(seen.has(i.link))return;seen.add(i.link);all.push(Object.assign({},i,{cat:classifyStory(i,i.cat||c)}))})});if(!all.length)return null;
  const R=S.newsReads,tot=1+Object.values(R).reduce((a,b)=>a+b,0),now=Date.now(),rd=new Set(S.readIds);
  all.forEach(i=>{const age=Math.max(0,(now-(i.date||now))/36e5);i.sc=Math.exp(-age/36)*(1+1.5*((R[i.cat]||0)/tot))+(i.img?.12:0)-(rd.has(i.id)?.6:0)});
  all.sort((a,b)=>b.sc-a.sc);const out=[];while(all.length&&out.length<30){let k=all.findIndex(x=>!(out.length>=2&&out[out.length-1].cat===x.cat&&out[out.length-2].cat===x.cat));if(k<0)k=0;out.push(all.splice(k,1)[0])}return out}
-function listFor(c){if(c==='saved')return S.saved.slice().sort((a,b)=>b.savedAt-a.savedAt);if(c==='foryou')return forYou();const n=newsCache(c);return n?n.items.map(i=>Object.assign({},i,{cat:i.cat||c})):null}
+function listFor(c){if(c==='saved')return S.saved.slice().sort((a,b)=>b.savedAt-a.savedAt);if(c==='foryou')return forYou();const caches=Object.keys(FEEDS).map(k=>newsCache(k)).filter(Boolean);if(!caches.length)return null;const seen=new Set();return caches.flatMap(n=>n.items).filter(i=>classifyStory(i,i.cat)===c&&!seen.has(i.link)&&seen.add(i.link)).map(i=>Object.assign({},i,{cat:c})).sort((a,b)=>(b.date||0)-(a.date||0))}
 
 // ---------- news list ----------
-let newsCat='foryou',newsErr=false,curList=[];
+let newsCat='foryou',newsErr=false,curList=[],newsQuery='',newsSort='recommended',newsLayout='grid';
+function newsMatches(items){const terms=newsQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);const out=(items||[]).filter(i=>terms.every(t=>(i.title+' '+i.src+' '+(i.desc||'')).toLowerCase().includes(t)));if(newsSort==='latest')out.sort((a,b)=>(b.date||0)-(a.date||0));return out}
 const BM='<svg viewBox="0 0 24 24" class="gi" aria-hidden="true"><path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-4.2L6 21V4.5a1 1 0 0 1 1-1z"/></svg>';
 const catTag=i=>(newsCat==='foryou'||newsCat==='saved')&&i.cat?`<span class="ncat c-${i.cat}">${NLAB[i.cat]}</span>`:'';
 const imgTag=(i,cls='')=>i.img?`<img ${cls} src="${esc(i.img)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`:'';
@@ -150,17 +155,18 @@ const nFeat=(i,k)=>`<article class="nfeat rv tap ${isRead(i)?'read':''}" data-i=
 const nRow=(i,k)=>`<article class="glass nrow tap" data-i="${k}" tabindex="0" role="button"><div class="im"><div class="ph">✦</div>${imgTag(i)}</div><div class="bd"><span class="nsrc">${esc(i.src)}${i.cat?' · '+NLAB[i.cat]:''}</span><h4>${esc(i.title)}</h4><span class="small muted">Saved ${ago(i.savedAt)}${rcGet(i.id)?' · available offline':''}</span></div><button class="bmk on" data-bm="${k}" aria-label="Remove from Saved">${BM}</button></article>`;
 const nSkel=()=>`<div class="nfeat skel" aria-hidden="true"></div><div class="newsgrid" aria-hidden="true">${Array.from({length:6},()=>`<div class="glass ncard sk"><div class="im skel"></div><div class="bd"><i class="skel"></i><i class="skel"></i><i class="skel s"></i></div></div>`).join('')}</div>`;
 function newsBody(){const c=newsCat;
- if(c==='saved'){curList=listFor('saved');return curList.length?`<div class="nlist stg">${curList.map(nRow).join('')}</div>`:EMPTY(BM.replace('gi','gi big'),'Nothing saved yet.','Tap the bookmark on any story to keep it here, readable even offline.')}
- const l=listFor(c);if(!l||!l.length){curList=[];return newsErr?EMPTY('⌁','The newsroom is quiet.','Couldn\u2019t reach the feeds right now. Check your connection and try again.',`<button class="btn sm tap" id="nRetry">${ic('refresh')} Retry</button>`):nSkel()}
- const fi=Math.max(0,l.findIndex(x=>x.img));curList=[l[fi]].concat(l.filter((_,k)=>k!==fi));
+ if(c==='saved'){curList=newsMatches(listFor('saved'));return !curList.length&&newsQuery?EMPTY('⌕','No matching saved stories.','Try another title or source.'):curList.length?`<div class="nlist stg">${curList.map(nRow).join('')}</div>`:EMPTY(BM.replace('gi','gi big'),'Nothing saved yet.','Tap the bookmark on any story to keep it here, readable even offline.')}
+ const raw=listFor(c);const l=raw&&newsMatches(raw);if(raw&&raw.length&&!l.length){curList=[];return EMPTY('⌕','No matching stories.','Try another title, topic or source.')}if(!l||!l.length){curList=[];return newsErr?EMPTY('⌁','The newsroom is quiet.','Couldn\u2019t reach the feeds right now. Check your connection and try again.',`<button class="btn sm tap" id="nRetry">${ic('refresh')} Retry</button>`):nSkel()}
+ const fi=newsSort==='latest'?0:Math.max(0,l.findIndex(x=>x.img));curList=[l[fi]].concat(l.filter((_,k)=>k!==fi));
  const at=c==='foryou'?Math.min(...['ai','games','movies'].map(k=>(newsCache(k)||{at:Date.now()}).at)):newsCache(c).at;
  return `${newsErr?`<div class="tile small offl">${ic('refresh')} You\u2019re seeing stories saved ${ago(at)}. Pull down to try again.</div>`:''}
  ${c==='foryou'?`<p class="fyi small muted">A mix of AI, games and film${Object.keys(S.newsReads).length?', tuned to what you read':''}.</p>`:''}
- ${nFeat(curList[0],0)}<div class="newsgrid">${curList.slice(1).map((x,k)=>nCard(x,k+1)).join('')}</div>
+ <div class="news-summary"><span>${curList.length} stories</span><span>${newsSort==='latest'?'Newest first':'Your daily selection'}</span></div>${newsLayout==='grid'&&!newsQuery?`<div class="news-lead">${nFeat(curList[0],0)}<div class="lead-side">${curList.slice(1,3).map((x,k)=>nCard(x,k+1)).join('')}</div></div><div class="newsgrid">${curList.slice(3).map((x,k)=>nCard(x,k+3)).join('')}</div>`:`<div class="newsgrid ${newsLayout==='list'?'compact':''}">${curList.map(nCard).join('')}</div>`}
  <p class="small muted" style="text-align:center;margin:18px 0 0">Updated ${ago(at)} · ${[...new Set(curList.map(i=>i.src))].join(', ')}</p>`}
-V.news=()=>`<section class="phead"><div class="row between" style="align-items:flex-end"><div><div class="kicker">The Feed</div><div class="ptitle">News<i>.</i></div></div><button class="iconbtn tap" id="nRef" aria-label="Refresh">${ic('refresh')}</button></div>
- <div class="segwrap"><div class="seg nseg" id="nSeg" role="tablist">${NCATS.map(k=>`<button data-c="${k}" role="tab" class="${k===newsCat?'on':''}">${NLAB[k]}${k==='saved'&&S.saved.length?`<em id="svN">${S.saved.length}</em>`:''}</button>`).join('')}</div></div></section>
- <section id="nBody">${newsBody()}</section>`;
+V.news=()=>`<section class="phead"><div class="row between" style="align-items:flex-end"><div><div class="kicker">Your daily window</div><div class="ptitle">News<i>.</i></div></div><button class="iconbtn tap" id="nRef" aria-label="Refresh">${ic('refresh')}</button></div>
+ <div class="segwrap"><div class="seg nseg" id="nSeg" role="tablist">${NCATS.map(k=>`<button data-c="${k}" role="tab" aria-selected="${k===newsCat}" aria-controls="nBody" class="${k===newsCat?'on':''}">${NLAB[k]}${k==='saved'&&S.saved.length?`<em id="svN">${S.saved.length}</em>`:''}</button>`).join('')}</div></div></section>
+ <div class="news-controls"><label class="news-search">${ic('search')}<input id="newsSearch" type="search" placeholder="Search stories or sources" aria-label="Search stories or sources" value="${esc(newsQuery)}"></label><select id="newsSort" aria-label="Sort stories"><option value="recommended" ${newsSort==='recommended'?'selected':''}>For you</option><option value="latest" ${newsSort==='latest'?'selected':''}>Latest first</option></select><div class="news-layout" aria-label="Feed layout"><button id="newsGrid" aria-label="Card view" aria-pressed="${newsLayout==='grid'}">${ic('grid')}</button><button id="newsList" aria-label="List view" aria-pressed="${newsLayout==='list'}">${ic('news')}</button></div></div>
+ <section id="nBody" aria-label="News stories">${newsBody()}</section>`;
 function nPaint(){const b=document.getElementById('nBody');if(!b)return;b.innerHTML=newsBody();bindNews();FX.refresh()}
 async function newsFetch(force){const c=newsCat;if(c==='saved')return true;const cats=c==='foryou'?['ai','games','movies']:[c];
  const need=cats.filter(k=>{const n=newsCache(k);return force||!n||Date.now()-n.at>20*6e4});if(!need.length)return true;
@@ -174,10 +180,11 @@ function toggleSave(it,btn){if(!it)return;const k=S.saved.findIndex(x=>x.id===it
  const n=document.getElementById('svN'),sb=document.querySelector('#nSeg [data-c=saved]');if(sb)sb.innerHTML='Saved'+(S.saved.length?`<em id="svN">${S.saved.length}</em>`:'');
  if(RDR.it&&RDR.it.id===it.id)$('#rdBm').classList.toggle('on',on);
  toast(on?'Saved for later':'Removed from Saved');if(newsCat==='saved'&&!on&&location.hash==='#news'&&!RDR.open)nPaint()}
-V.news.after=()=>{document.querySelectorAll('#nSeg button').forEach(b=>b.onclick=()=>{if(newsCat===b.dataset.c)return;newsCat=b.dataset.c;newsErr=false;document.querySelectorAll('#nSeg button').forEach(x=>x.classList.toggle('on',x===b));FX.seg();b.scrollIntoView({inline:'nearest',block:'nearest',behavior:'smooth'});nPaint();newsFetch()});
+V.news.after=()=>{let searchDelay;$('#newsSearch').oninput=e=>{newsQuery=e.target.value;clearTimeout(searchDelay);searchDelay=setTimeout(nPaint,120)};$('#newsSort').onchange=e=>{newsSort=e.target.value;nPaint()};[['newsGrid','grid'],['newsList','list']].forEach(([id,layout])=>{$('#'+id).onclick=()=>{newsLayout=layout;$('#newsGrid').setAttribute('aria-pressed',String(layout==='grid'));$('#newsList').setAttribute('aria-pressed',String(layout==='list'));nPaint()}});
+ document.querySelectorAll('#nSeg button').forEach(b=>b.onclick=()=>{if(newsCat===b.dataset.c)return;newsCat=b.dataset.c;newsErr=false;document.querySelectorAll('#nSeg button').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-selected',String(x===b))});FX.seg();b.scrollIntoView({inline:'nearest',block:'nearest',behavior:'smooth'});nPaint();newsFetch()});
  $('#nRef').onclick=e=>{e.currentTarget.animate([{transform:'rotate(0)'},{transform:'rotate(360deg)'}],{duration:700,easing:'cubic-bezier(.34,1.45,.5,1)'});newsFetch(true)};
  const body=$('#nBody');body.onclick=e=>{const b=e.target.closest('[data-bm]');if(b){e.stopPropagation();toggleSave(curList[+b.dataset.bm],b);return}const c=e.target.closest('[data-i]');if(c)openReader(curList,+c.dataset.i,c.querySelector('img'))};
- body.onkeydown=e=>{if(e.key==='Enter'&&e.target.matches('[data-i]'))openReader(curList,+e.target.dataset.i,e.target.querySelector('img'))};
+ body.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-i]')){e.preventDefault();openReader(curList,+e.target.dataset.i,e.target.querySelector('img'))}};
  bindNews();newsFetch()};
 V.news.ptr=()=>newsFetch(true);
 
@@ -195,7 +202,7 @@ function rdFallback(it){return (it.desc?`<p>${esc(it.desc)}</p>`:'')+`<div class
 function rdFinish(res,it){const b=$('#rdBody');if(!b)return;
  if(res&&res.img&&!it.img)rdLateHero(res.img,it);
  if(res&&it.img)res={html:(()=>{const t=RD.createElement('div');t.innerHTML=res.html;const f=t.querySelector('img');if(f&&sameImg(f.getAttribute('src'),it.img)){const fig=f.closest('figure');(fig||f).remove()}return t.innerHTML})(),words:res.words,via:res.via};
- b.innerHTML=res?res.html:rdFallback(it);b.querySelectorAll('a[href]').forEach(a=>{a.target='_blank';a.rel='noopener noreferrer'});b.querySelectorAll('img').forEach(i=>{i.loading='lazy';i.decoding='async';i.referrerPolicy='no-referrer';i.onerror=()=>{const f=i.closest('figure');(f&&!f.textContent.trim()?f:i).remove()}});
+ b.innerHTML=res?tidyReader(res.html):rdFallback(it);b.querySelectorAll('a[href]').forEach(a=>{a.target='_blank';a.rel='noopener noreferrer'});b.querySelectorAll('img').forEach(i=>{i.loading='lazy';i.decoding='async';i.referrerPolicy='no-referrer';i.onerror=()=>{const f=i.closest('figure');(f&&!f.textContent.trim()?f:i).remove()}});
  const fp=b.querySelector(':scope>p');b.classList.toggle('dc',!!(res&&fp&&fp===b.firstElementChild&&fp.textContent.trim().length>180&&/^[A-Za-z“"]/.test(fp.textContent.trim())));
  $('#rdMins').textContent=res?mins(res.words)+' min read':'Summary';const v=$('#rdVia');if(v)v.textContent=res?({feed:'From the feed',wp:'Full text',reader:'Reader view',proxy:'Reader view'})[res.via]||'':'';
  b.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:450,easing:'cubic-bezier(.16,1,.3,1)'});rdProgress()}

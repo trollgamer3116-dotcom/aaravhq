@@ -988,3 +988,41 @@ html.scrolling .aur.pa,html.scrolling .aur.pb,html.scrolling .orb i::after,body.
 @media (prefers-reduced-motion:reduce){.aur.pa{animation:none!important;opacity:1}.aur.pb{animation:none!important;opacity:0}.orb i::after{animation:none!important;opacity:0}}
 /* glass rims pick up a whisper of the current palette */
 .glass::before{background:radial-gradient(260px circle at var(--mx) var(--my),rgba(255,255,255,.85),rgba(255,255,255,0) 60%),linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.18) 28%,rgba(255,255,255,.04) 55%,color-mix(in srgb,var(--a2) 30%,rgba(255,255,255,.1)) 80%,color-mix(in srgb,var(--a2) 35%,rgba(255,255,255,.4)))}
+
+/* HQ refinement · calmer surfaces and an editorial news layout */
+:root{--tx3:rgba(246,244,241,.55)}
+html[data-theme=light]{--tx3:rgba(21,19,26,.58)}
+.phead{padding-top:28px;padding-bottom:12px}
+.card{border:1px solid var(--line)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ember);outline-offset:4px}
+body[data-view=news] .phead{margin-bottom:0}
+.news-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 8px}
+.news-search{display:flex;align-items:center;gap:10px;flex:1;min-width:180px;padding:0 16px;border:1px solid var(--line);border-radius:18px;background:var(--gfill)}
+.news-search .gi{width:18px;flex:none;color:var(--tx2)}
+.news-search input{background:transparent;border:0;box-shadow:none;padding:14px 0;width:100%;min-width:0}
+.news-controls select{width:auto;min-height:48px;border-radius:16px;background:var(--gfill);color:var(--tx);border:1px solid var(--line);padding:0 12px}
+.news-layout{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:16px;background:var(--gfill)}
+.news-layout button{width:40px;height:40px;border:0;border-radius:12px;background:transparent;color:var(--tx2);display:grid;place-items:center;cursor:pointer}
+.news-layout button[aria-pressed=true]{background:var(--gfill2);color:var(--ember);box-shadow:0 2px 8px #0001}
+.news-summary{display:flex;justify-content:space-between;gap:16px;font-size:12px;color:var(--tx2);margin:18px 4px 14px}
+.news-lead{display:grid;gap:18px;margin-bottom:22px}
+.lead-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.newsgrid{gap:20px}
+.ncard{border:1px solid var(--line);border-radius:24px;transition:border-color .2s,box-shadow .2s}
+.ncard .bd{padding:18px 20px;gap:12px;flex:1}
+.ncard h4{font-size:17px;line-height:1.42;-webkit-line-clamp:4}
+.ncard .nm{margin-top:auto;color:var(--tx2)}
+.nsrc{color:var(--tx2);font-size:11px;letter-spacing:.075em;line-height:1.5}
+.nfeat{background:linear-gradient(140deg,#283544,#201826);min-height:430px;border:1px solid var(--line);border-radius:28px}
+.nfeat .sh{background:linear-gradient(180deg,#0001 0%,#0005 35%,#000d 100%)}
+.nfeat .tx{padding:30px}.nfeat h3{line-height:1.08;font-size:clamp(32px,4vw,48px);text-wrap:balance}
+.nfeat .nsrc{color:#ffffffba}.nfeat p{line-height:1.6;color:#ffffffe0}
+.newsgrid.compact{grid-template-columns:1fr}
+.newsgrid.compact .ncard{display:flex;flex-direction:row;align-items:stretch;content-visibility:visible}
+.newsgrid.compact .ncard .im{width:160px;flex:none;aspect-ratio:auto;min-height:130px}
+.newsgrid.compact .ncard h4{-webkit-line-clamp:2}
+.rd-page{line-height:1.8}.rd-page p{margin-bottom:1.3em}
+@media(min-width:900px){.news-lead{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}.lead-side{grid-template-columns:1fr}.lead-side .ncard{flex-direction:row}.lead-side .ncard .im{width:36%;aspect-ratio:auto}.lead-side .ncard h4{font-size:17px}.lead-side .ncat{display:none}.news-lead .nfeat{min-height:470px}}
+@media(max-width:600px){.news-controls{gap:8px}.news-search{flex-basis:100%}.news-controls select{flex:1}.news-lead{gap:14px}.lead-side{grid-template-columns:1fr}.lead-side .ncard{flex-direction:row}.lead-side .ncard .im{width:32%;aspect-ratio:auto}.lead-side .ncat{display:none}.lead-side .ncard h4{font-size:16px;-webkit-line-clamp:3}.nfeat .tx{padding:24px}.nfeat{min-height:400px}.newsgrid.compact .ncard .im{width:100px}.newsgrid.compact .ncat{display:none}.newsgrid.compact .ncard .bd{padding:14px}.newsgrid.compact .ncard h4{font-size:15px}.newsgrid{gap:14px}}
+@media(hover:hover){.ncard:hover{border-color:color-mix(in srgb,var(--ember) 40%,var(--line));box-shadow:0 12px 32px #0002}}
+@media(prefers-reduced-motion:reduce){.ncard,.nfeat img{transition:none}}
