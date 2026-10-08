@@ -939,8 +939,8 @@ html[data-theme=light] .lg{box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inse
 html[data-theme=light] .sheet.lg,html[data-theme=light] .spot-box.glass{background:linear-gradient(160deg,rgba(255,255,255,.78),rgba(255,255,255,.62))}
 .sheet.lg{-webkit-backdrop-filter:blur(10px) saturate(170%);backdrop-filter:blur(10px) saturate(170%)}
 /* scroll perf: skip offscreen list work, no blend-mode grain on phones */
-.newsgrid>.ncard,.nlist>.nrow,.libgrid>.lcard,.qlist>.qrow{content-visibility:auto;contain-intrinsic-size:auto 260px}
-.nlist>.nrow,.qlist>.qrow{contain-intrinsic-size:auto 76px}
+/* Keep real card geometry so feed heights never change during scrolling. */
+.newsgrid>.ncard,.nlist>.nrow,.libgrid>.lcard,.qlist>.qrow{content-visibility:visible}
 @media (hover:none){.grain{display:none}}
 html.scrolling .glass::after,html.scrolling .lg::after{transition:none}
 html.scrolling .aur,html.scrolling .aur i,html.scrolling .orb,html.scrolling .wxfx{animation-play-state:paused!important}
@@ -1386,3 +1386,9 @@ html[data-theme=light] .dockblob{background:linear-gradient(145deg,#fffef59c,#ff
 .desk-id{font-size:10px}.clock-label{font-size:9px}.clock-label span:last-child{font-size:8px}
 .desk-tab{font-size:9px}.hdate{font-size:10px}.slip-caption{font-size:8px}.slip-code{font-size:9px}.nsrc{font-size:10px}
 @media(max-width:600px){.desk-id{font-size:9px}.clock-label,.desk-tab{font-size:8px}.hdate{font-size:9px}.slip-caption{font-size:7px}.slip-code{font-size:8px}.bento>[data-w=notes]{grid-column:span 2}}
+
+/* Clip the ripple, never the control or its popovers. */
+.rip-clip{position:absolute!important;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:3}
+html{scrollbar-gutter:stable}
+.sheet{max-height:calc(100dvh - env(safe-area-inset-top) - 30px);overflow-y:auto;overscroll-behavior:contain}
+@media(min-width:640px){.sheet{max-height:calc(84dvh - 24px)}}
