@@ -1119,8 +1119,6 @@ body{padding-top:calc(env(safe-area-inset-top) + 86px)}
 .hero .px{will-change:auto}.hero-eyebrow{font-size:10px;letter-spacing:.15em;margin-bottom:24px}
 .greet{font:500 18px/1.4 var(--ui);letter-spacing:-.02em;margin:0 0 12px;color:var(--tx2)}.greet i{font-style:normal;color:inherit}
 .hero-title{font-size:clamp(58px,6.6vw,90px);font-weight:650;line-height:1.01;letter-spacing:-.075em;text-wrap:balance}
-.hero-title span{color:var(--tx2);background:linear-gradient(110deg,#a6ddff,#a7b6ff 55%,#d2c2ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-html[data-theme=light] .hero-title span{background-image:linear-gradient(110deg,#0071e3,#6751c4 65%,#b65c91)}
 .ctx{font-size:17px;line-height:1.6;letter-spacing:-.015em;max-width:34ch;margin:22px 0 0}
 .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
 .btn{border-radius:999px;padding:12px 19px;font-size:14px;font-weight:500;letter-spacing:-.01em;gap:8px}
