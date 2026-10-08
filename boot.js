@@ -15,11 +15,9 @@ const PAN=[[60,'night'],[330,'night'],[420,'dawn'],[540,'day'],[930,'day'],[1080
 const hx=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)),xh=a=>'#'+a.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
 const mixc=(a,b,t)=>{const p=hx(a),q=hx(b);return xh(p.map((v,i)=>v+(q[i]-v)*t))};
 function istMin(){const [h,m]=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()).split(':').map(Number);return (h%24)*60+m}
-function bgPalette(){const r=document.documentElement;let m=istMin();if(m<60)m+=1440;let k=0;while(k<PAN.length-2&&m>=PAN[k+1][0])k++;
- const [m0,p0]=PAN[k],[m1,p1]=PAN[k+1],t0=Math.max(0,Math.min(1,(m-m0)/((m1-m0)||1))),t=t0*t0*(3-2*t0),light=r.dataset.theme==='light';
- const base=PAL[p0][0].map((c,i)=>mixc(c,PAL[p1][0][i],t));if(window.ATM){ATM.palette(base);return}['a','b'].forEach((s,j)=>{for(let i=0;i<4;i++){let c=mixc(PAL[p0][j][i],PAL[p1][j][i],t);if(light)c=mixc(c,'#ffffff',.7);r.style.setProperty('--'+s+(i+1),c)}})}
+function bgPalette(){const r=document.documentElement,light=r.dataset.theme==='light',base=PAL[light?'day':'night'][0];if(window.ATM){ATM.palette(base);return}['a','b'].forEach((s,j)=>{for(let i=0;i<4;i++){const c=PAL[light?'day':'night'][j][i];r.style.setProperty('--'+s+(i+1),light?mixc(c,'#ffffff',.7):c)}})}
 bgPalette();
-setInterval(()=>{document.documentElement.dataset.tod=tod();bgPalette()},60000);
+// Colour palettes update through ATM interactions, never an idle timer.
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)bgPalette()});
 $('#themeBtn').onclick=()=>{const o=['system','light','dark'];S.settings.theme=o[(o.indexOf(S.settings.theme)+1)%3];save();
  const go=()=>{applyTheme();if(location.hash==='#settings')render()};if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(go);else go();toast('Theme: '+S.settings.theme[0].toUpperCase()+S.settings.theme.slice(1))};

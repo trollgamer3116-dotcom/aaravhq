@@ -7,6 +7,13 @@ async function ready(){for(let n=0;n<100&&!w.HQPLUS.ready();n++)await tick();ass
 async function route(h){w.location.hash='#'+h;await tick();await tick()}
 async function capture(){await w.HQPLUS.capture();await tick()}
 (async()=>{await ready();await tick();assert.equal(w.document.body.dataset.view,'vault');assert.ok(w.testV.more().includes('#play'));assert.ok(!w.testV.more().includes('#ai'));
+
+ const rootStyle=w.document.documentElement.style;
+ w.testS.settings.atmosphere='flow';w.ATM.refresh();const restingTone=rootStyle.getPropertyValue('--tone');
+ w.ATM.palette(['#3756cc','#147b93','#b8588a','#754bd1'],Date.now()+900000);assert.equal(rootStyle.getPropertyValue('--tone'),restingTone,'Idle time must not cycle the palette');
+ $('#qcBtn').dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.notEqual(rootStyle.getPropertyValue('--tone'),restingTone,'Touch changes the flow palette');
+ w.testS.settings.atmosphere='tidal';w.ATM.refresh();const pinnedTone=rootStyle.getPropertyValue('--tone');$('#qcBtn').dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.equal(rootStyle.getPropertyValue('--tone'),pinnedTone,'Pinned colour world remains pinned');
+ w.testS.settings.atmosphere='flow';w.ATM.refresh();
  Object.defineProperty(w,'innerWidth',{value:320,configurable:true});Object.defineProperty(w,'innerHeight',{value:667,configurable:true});
  w.visualViewport={height:367,offsetTop:0};
  await capture();assert.ok(w.document.documentElement.classList.contains('sheet-open'));
