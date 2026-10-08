@@ -1,14 +1,15 @@
 # HQ
-Installable liquid-glass PWA for one person: home dashboard, calendar, news reader, music, focus timer, goals, habits, notes, stats, timers, currency, world clock and calculator. Vanilla JS, no build step, all data in localStorage, works offline.
+Installable liquid-glass personal hub: home dashboard, calendar, news reader, music, notes, Vault, browsing shortcuts, routines, Play Corner and everyday tools. Vanilla JavaScript with no build step. Local data stays in localStorage and IndexedDB; external news, weather and music need network access.
 
 Live: https://trollgamer3116-dotcom.github.io/aaravhq/
 
-## v4
-- **News reader**: glass sheet with parallax hero, serif/sans, text size, light/sepia/dark, reading progress, full text where available (feed → WordPress REST → reader proxies → summary + "Open original"), bookmarks with offline copies, swipe between stories, pull to refresh, skeletons, "For you" mix.
-- **Now Playing**: full-screen player that morphs from the mini player, ambient blurred art colours, scrubbable progress, shuffle, repeat, volume, up-next queue, visualiser, video mode, Media Session controls. Library grid and recently played; mini player with progress line and swipe-to-skip.
-- **Motion**: animated splash, view transitions between tabs, staggered reveals, liquid tab indicator, droplet pull-to-refresh, springy draggable sheets, count-ups. Respects reduced motion.
-- **Spotlight** (search button, ⌘K / Ctrl+K or /): notes, events, goals, habits, news, music, pages, quick actions, plus maths, currency and "time in…" answers.
-- **Home**: drag to reorder, hide and restore widgets (press and hold or Edit), nightly recap card with rings.
-- **Timers**: stopwatch with laps and multiple countdown timers.
+## Prism desk (v40)
+- Six home spectrum controls change the colour world. Touch & flow also follows navigation and long scroll gestures; named atmosphere choices pin the palette. No timed palette cycling.
+- Palette writes are deduplicated. Scroll colour changes happen after a gesture settles, rather than on every frame. Ordinary taps use local caustics and spring effects.
+- Two bounded background layers crossfade. The clock artwork pauses offscreen; background and clock motion pause during scrolling. Desktop pointer lighting updates only the targeted glass surface.
+- Mobile sheets follow the visual viewport and avoid opening the keyboard automatically. Reduced motion follows the device preference.
 
-Files: `index.html`, `styles.css`, `app.js` (core + views), `news.js`, `music.js`, `search.js`, `fx.js` (motion), `boot.js`, `sw.js` (cache `aaravhq-v12`).
+## Verification
+From `qa`, install the pinned development dependencies and run `npm test` for state, navigation, sheets, offline Vault, games and interaction regressions. Open `qa/mobile.html` for responsive sizing checks at 320, 375, 390, 430 and 768px. The optional scroll rendering probe measures its current Chrome environment; it is not an iPhone or Safari benchmark.
+
+Production assets use `?v=40`; the service worker uses `aaravhq-v40`.
