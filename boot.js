@@ -32,7 +32,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.body.clas
 document.querySelectorAll('#qcSeg button').forEach(b=>b.onclick=()=>{qcKind=b.dataset.k;document.querySelectorAll('#qcSeg button').forEach(x=>x.classList.toggle('on',x===b));FX.seg();$('#qcText').placeholder=qcKind==='goal'?'One thing that would make today a win…':'Capture a thought…'});
 $('#qcText').placeholder='One thing that would make today a win…';
 $('#qcForm').onsubmit=e=>{e.preventDefault();const v=$('#qcText').value.trim();if(!v)return;if(qcKind==='goal')S.todos.push({id:uid(),text:v.slice(0,140),done:false,date:today()});else S.notes.push({id:uid(),text:v,pinned:false,created:Date.now(),updated:Date.now()});save();$('#qcText').value='';closeSheets();toast(qcKind==='goal'?'Goal added to today ✓':'Note saved ✓');render()};
-const TABOF={goals:'more',notes:'more',habits:'more',stats:'more',settings:'more',focus:'more',tools:'more',convert:'more',clocks:'more',calc:'more',timers:'more'};
+const TABOF={ai:'more',goals:'more',notes:'more',habits:'more',stats:'more',settings:'more',focus:'more',tools:'more',convert:'more',clocks:'more',calc:'more',timers:'more'};
 const ORDER=['home','cal','news','music','more'];
 let vtSrc=null,curVT=null;
 const viewOf=h=>{const t=(h||'#home').slice(1);return V[t]?t:'home'};

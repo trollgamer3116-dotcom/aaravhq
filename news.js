@@ -237,9 +237,10 @@ function rdRender(){const it=RDR.list[RDR.i];RDR.it=it;const nx=RDR.list[RDR.i+1
  <header class="rd-head"><div class="rd-m1"><span class="nsrc">${esc(it.src)}</span>${it.cat?`<span class="ncat c-${it.cat}">${NLAB[it.cat]}</span>`:''}</div><h1 class="rd-title">${esc(it.title)}</h1>
  <div class="rd-m2">${d?d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:d.getFullYear()!==new Date().getFullYear()?'numeric':undefined})+' · '+d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})+' · ':''}<span id="rdMins">${cached?mins(cached.words)+' min read':'…'}</span><span class="rd-via" id="rdVia"></span></div></header>
  <div class="rd-body" id="rdBody">${rdBodyHTML(cached,it)}</div>
- <footer class="rd-end"><a class="btn tap" href="${esc(it.link)}" target="_blank" rel="noopener">Open original ${ic('ext')}</a>
+ <footer class="rd-end"><button class="btn tap" id="rdAskAI">Think through this with HQ AI ↗</button><a class="btn tap" href="${esc(it.link)}" target="_blank" rel="noopener">Open original ${ic('ext')}</a>
  ${nx?`<button class="rd-next glass tap" id="rdNx"><span class="kicker">Up next · swipe ←</span><span class="rn">${nx.img?`<img src="${esc(nx.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}<b>${esc(nx.title)}</b></span></button>`:`<p class="small muted" style="text-align:center">You\u2019re all caught up ✦</p>`}</footer>`;
  $('#rdScroll').scrollTop=0;rdProgress();$('#rdPrev').disabled=RDR.i===0;$('#rdNext').disabled=!nx;
+ const ask=document.getElementById('rdAskAI');if(ask)ask.onclick=()=>{HQAI.story(it);closeReader(true)};
  const n=document.getElementById('rdNx');if(n)n.onclick=()=>rdGo(1);
  if(cached)rdFinish(cached,it);else getArticle(it).then(res=>{if(RDR.it===it&&RDR.open)rdFinish(res,it)})}
 function markRead(it){if(!S.readIds.includes(it.id)){S.readIds.unshift(it.id);S.readIds=S.readIds.slice(0,300);if(it.cat)S.newsReads[it.cat]=(S.newsReads[it.cat]||0)+1;const t=today();S.readLog[t]=(S.readLog[t]||0)+1;save()}}
