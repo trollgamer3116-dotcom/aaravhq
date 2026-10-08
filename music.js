@@ -78,7 +78,7 @@ let msLast=0;function msPos(){if(!('mediaSession' in navigator)||!navigator.medi
 // ---------- mini player ----------
 let lastPP=null;
 function setPP(){if(lastPP===playing)return;lastPP=playing;['mPlay','bigPlay','npPlay'].map(id=>document.getElementById(id)).concat([...document.querySelectorAll('.hmc [data-mc=toggle]')]).forEach(b=>{if(!b)return;b.innerHTML=playing?IC.pause:IC.play;b.setAttribute('aria-label',playing?'Pause':'Play');const s=b.firstElementChild;if(s&&!RMQ.matches)s.animate([{transform:'scale(.4) rotate(-40deg)',opacity:0},{transform:'none',opacity:1}],{duration:420,easing:'cubic-bezier(.34,1.56,.5,1)'})})}
-function updMini(){const m=$('#mini');if(!m)return;const d=vd(),it=curItem();const show=!!(ytReady&&d&&d.video_id);m.classList.toggle('hidden',!show);document.body.classList.toggle('hasmini',show);
+function updMini(){if(window.ATM){if(curVid)ATM.music(curVid);ATM.refresh()}const cq=document.getElementById('compactQ');if(cq&&gs.classList.contains('on')&&cq.dataset.track!==curVid){cq.dataset.track=curVid||'';cq.innerHTML=queueHTML(8);qFill(cq)}const m=$('#mini');if(!m)return;const d=vd(),it=curItem();const show=!!(ytReady&&d&&d.video_id);m.classList.toggle('hidden',!show);document.body.classList.toggle('hasmini',show);
  if(show){const t=cleanT(d.title)||(YM[d.video_id]&&cleanT(YM[d.video_id].t))||'Loading…';if($('#miniTitle').textContent!==t)$('#miniTitle').textContent=t;const sub=(d.author?cleanA(d.author)+' · ':'')+(it?it.title:'');if($('#miniSub').textContent!==sub)$('#miniSub').textContent=sub;const th=thumb(d.video_id);if($('#miniThumb').getAttribute('src')!==th)$('#miniThumb').src=th}
  lastPP=lastPP===playing&&!document.querySelector('#bigPlay:empty,#mPlay:empty')?lastPP:null;setPP();m.classList.toggle('playing',playing);
  const eq=document.getElementById('mEq');if(eq)eq.classList.toggle('paused-eq',!playing);
@@ -107,8 +107,10 @@ setInterval(()=>{if(ytReady)updMini()},2000);
    if(!pl||!pl.length){c.style.transform='';toast('This is a single video, so there\u2019s no next track.');return}
    c.animate([{transform:`translate3d(${dx*.75}px,0,0)`,opacity:1},{transform:`translate3d(${-dir*140}px,0,0)`,opacity:0}],{duration:170,easing:'ease-in',fill:'forwards'}).onfinish=()=>{dir>0?ctl.next():ctl.prev();c.style.transform='';c.getAnimations().forEach(a=>a.cancel());c.animate([{transform:`translate3d(${dir*140}px,0,0)`,opacity:0},{transform:'none',opacity:1}],{duration:560,easing:'cubic-bezier(.2,.9,.25,1.06)'})};
    try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}}
-  else{c.style.transform='';if(dy<-28||(Math.abs(dx)<8&&Math.abs(dy)<8))openNP($('#miniThumb'))}});
+  else{c.style.transform='';if(dy<-28)openCompactQueue();else if(Math.abs(dx)<8&&Math.abs(dy)<8)openNP($('#miniThumb'))}});
  c.addEventListener('pointercancel',()=>{act=false;c.style.transition='';c.style.transform=''})})();
+function openCompactQueue(){openSheet(`<div class="row between"><div><div class="kicker">THE ROTATION / UP NEXT</div><h2>Keep the record going.</h2></div><button class="iconbtn tap" id="cqClose" aria-label="Close queue">×</button></div><div id="compactQ" class="compact-queue">${queueHTML(8)}</div>`,sh=>{sh.querySelector('#cqClose').onclick=closeSheets;const q=sh.querySelector('#compactQ');q.dataset.track=curVid||'';qFill(q)})}
+$('#mQueueBtn').onclick=openCompactQueue;
 // ---------- album palette (ambient colors) ----------
 const palCache={};
 function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0;const l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6}return[h*360,s,l]}

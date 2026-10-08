@@ -48,7 +48,7 @@ document.addEventListener('pointerdown',e=>{const t=e.target.closest('.tap,.btn,
  const s=document.createElement('span');s.className='rip';s.style.left=(e.clientX-r.left)+'px';s.style.top=(e.clientY-r.top)+'px';const clip=document.createElement('span');clip.className='rip-clip';clip.setAttribute('aria-hidden','true');clip.appendChild(s);t.appendChild(clip);setTimeout(()=>clip.remove(),720)},{passive:true});
 // --- segmented-control knob (stretches as it travels) + liquid dock blob
 let pressure=null;
-function releasePressure(){if(!pressure)return;pressure.el.classList.remove('liquid-pressed');pressure=null}
+function releasePressure(){if(!pressure)return;const el=pressure.el;el.classList.remove('liquid-pressed');pressure=null;if(!RM.matches&&el.isConnected&&el.animate&&!scrolling)el.animate([{scale:'.97'},{scale:'1.025',offset:.45},{scale:'1'}],{duration:430,easing:'cubic-bezier(.22,.8,.3,1)'})}
 document.addEventListener('pointerdown',e=>{releasePressure();if(RM.matches||e.button>0)return;const el=e.target.closest('.tap,.btn,.iconbtn,.seg button,.news-layout button,.dock a');if(!el||el.closest('.editing'))return;const r=el.getBoundingClientRect();el.style.setProperty('--press-x',((e.clientX-r.left)/r.width*100)+'%');el.style.setProperty('--press-y',((e.clientY-r.top)/r.height*100)+'%');el.classList.add('liquid-pressed');pressure={el,x:e.clientX,y:e.clientY}},{passive:true});
 document.addEventListener('pointermove',e=>{if(pressure&&Math.hypot(e.clientX-pressure.x,e.clientY-pressure.y)>12)releasePressure()},{passive:true});
 ['pointerup','pointercancel','scroll'].forEach(type=>document.addEventListener(type,releasePressure,{passive:true}));
@@ -94,7 +94,8 @@ function refresh(){for(const el of tracked){if(!el.isConnected){io.unobserve(el)
  document.querySelectorAll('#view .rv:not(.in)').forEach(el=>{if(RM.matches){el.classList.add('in');return}const r=el.getBoundingClientRect();if(MOBILE&&r.top<innerHeight){el.classList.add('in');return}el.dataset.d=r.top<innerHeight?Math.min(i++*70,420):0;reveals.add(el);rio.observe(el)});
  document.querySelectorAll('#view .stg:not(.in)').forEach(el=>{[...el.children].forEach((c,k)=>c.style.setProperty('--i',Math.min(k,12)));if(RM.matches||MOBILE)el.classList.add('in');else{reveals.add(el);rio.observe(el)}});
  grabbers();seg();dock();lastY=-1;onScroll();kick()}
-window.FX={refresh,seg,dock};
+function bookmark(button){if(RM.matches)return;const a=button.getBoundingClientRect(),tab=document.querySelector('#nSeg [data-c=saved]'),r=tab&&tab.getBoundingClientRect(),target=r&&r.top>70&&r.bottom<innerHeight?r:document.querySelector('#dock a[data-t=news]').getBoundingClientRect();const dot=document.createElement('span');dot.className='bookmark-flight';dot.setAttribute('aria-hidden','true');dot.innerHTML=button.innerHTML;dot.style.left=(a.left+a.width/2-12)+'px';dot.style.top=(a.top+a.height/2-12)+'px';document.body.appendChild(dot);const dx=target.left+target.width/2-a.left-a.width/2,dy=target.top+target.height/2-a.top-a.height/2;const animation=dot.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${dx*.45}px,${dy*.45-55}px) scale(1.25)`,opacity:1,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(.3)`,opacity:0}],{duration:700,easing:'cubic-bezier(.25,.7,.3,1)'});animation.onfinish=()=>dot.remove();setTimeout(()=>dot.remove(),850)}
+window.FX={refresh,seg,dock,bookmark};
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{seg();dock()});
 refresh();
 })();
