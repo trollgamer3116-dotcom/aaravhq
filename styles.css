@@ -1563,14 +1563,49 @@ body.qc #scrim{touch-action:none}
 @media(prefers-reduced-motion:reduce){.contact-glow{animation:none}.current-light,.glass,.lg{transition:none}}
 
 /* Give interaction colours a visible surface in both themes. */
-html[data-theme=dark] .bg,html[data-theme=light] .bg{background:radial-gradient(ellipse at 8% 12%,color-mix(in srgb,var(--tone) 27%,transparent),transparent 65%),radial-gradient(ellipse at 92% 85%,color-mix(in srgb,var(--tone2) 20%,transparent),transparent 68%),var(--bg)}
-html[data-theme=dark] .current-light.on{opacity:.92}
-html[data-theme=dark] .glass,html[data-theme=dark] .lg{background-color:color-mix(in srgb,var(--tone) 11%,transparent)}
-html[data-theme=dark] .glass::after,html[data-theme=dark] .lg::after{background:linear-gradient(118deg,color-mix(in srgb,var(--tone) 24%,transparent),transparent 42%,color-mix(in srgb,var(--tone2) 18%,transparent))}
-html[data-theme=light] .glass,html[data-theme=light] .lg{background-color:color-mix(in srgb,var(--tone) 9%,transparent)}
-html[data-theme=light] .glass::after,html[data-theme=light] .lg::after{background:linear-gradient(118deg,color-mix(in srgb,var(--tone) 20%,transparent),transparent 42%,color-mix(in srgb,var(--tone2) 15%,transparent))}
-html[data-theme=dark] .barglass,html[data-theme=dark] .dock,html[data-theme=dark] .mini{background:linear-gradient(135deg,color-mix(in srgb,var(--tone) 16%,transparent),color-mix(in srgb,var(--tone2) 9%,transparent)),#0a102838}
-html[data-theme=light] .barglass,html[data-theme=light] .dock,html[data-theme=light] .mini{background:linear-gradient(135deg,color-mix(in srgb,var(--tone) 13%,#ffffff88),#ffffff77)}
-.hero-time{border-color:color-mix(in srgb,var(--tone) 65%,var(--line))}
-
-.current-light:not(.on){display:none}
+/* Prism desk: bounded lighting, optical edges, deliberate colour. */
+html[data-theme=dark] .bg,html[data-theme=light] .bg{background:var(--bg)}
+.bg .aur,.bg .orb{display:none}
+.current-light{inset:0!important;transition:opacity .8s ease;animation:prismDrift 24s ease-in-out infinite alternate;will-change:auto}
+.current-light:not(.on){opacity:0;animation-play-state:paused}
+html[data-theme=dark] .current-light.on,html[data-theme=light] .current-light.on{opacity:1}
+@keyframes prismDrift{from{transform:translate3d(-2%,0,0)}to{transform:translate3d(2%,2%,0)}}
+.scrolling .current-light,.scrolling .clock-reflection,.scrolling .prism-sail i,.scrolling .hero-time,.scrolling .desk-slip{animation-play-state:paused!important}
+.glass,.lg{transition:opacity .4s var(--out),transform .55s var(--out),scale .5s var(--spring),translate .5s var(--spring)}
+html[data-theme=dark] .glass,html[data-theme=dark] .lg{background-color:color-mix(in srgb,var(--tone) 7%,transparent)}
+html[data-theme=light] .glass,html[data-theme=light] .lg{background-color:#ffffff25}
+html[data-theme=dark] .glass::after,html[data-theme=light] .glass::after,html[data-theme=dark] .lg::after,html[data-theme=light] .lg::after{background:linear-gradient(118deg,color-mix(in srgb,var(--tone) 13%,transparent),transparent 42%,color-mix(in srgb,var(--tone2) 11%,transparent))}
+.touch-caustic{position:absolute;pointer-events:none;z-index:5;inset:15% 10%;border-radius:50%;opacity:0;animation:causticTouch .65s ease-out both;mix-blend-mode:soft-light}
+@keyframes causticTouch{0%{opacity:.4;transform:scale(.5)}100%{opacity:0;transform:scale(1.4)}}
+.prism-desk{grid-template-columns:1fr 1fr;gap:64px;padding:52px 0 46px;align-items:center;min-height:0}
+.prism-desk .desk-id{letter-spacing:.1em;font-size:8px}
+.prism-desk .greet{margin:28px 0 10px;font-size:13px}
+.prism-desk .hero-title{font-size:clamp(68px,9vw,116px);line-height:.84;letter-spacing:-.085em;font-weight:500;position:relative;overflow:visible}
+.prism-desk .hero-title em{font-family:var(--paper);font-style:italic;font-weight:400;letter-spacing:-.065em;color:var(--ember)}
+.prism-desk .cursor-notch{font-family:var(--folio);font-size:30px;position:absolute;right:10%;top:8%;color:var(--ember);animation:none}
+.orbit-deck{font:400 19px/1.35 var(--paper);margin:24px 0;color:var(--tx2)}
+.prism-desk .ctx{margin-top:18px;font-size:11px}
+.spectrum{display:flex;flex-direction:column;gap:12px;width:max-content;max-width:100%;margin-top:26px}
+.spectrum-label{font:8px var(--folio);letter-spacing:.1em;color:var(--tx3)}
+.spectrum-keys{display:flex;gap:7px}
+.spectrum-key{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;width:44px;border-radius:14px;background:#ffffff06;border:1px solid var(--line);color:var(--tx3);font:8px var(--folio);cursor:pointer}
+.spectrum-key i{display:block;width:23px;height:23px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 2px 3px #ffffff80,inset 0 -3px 5px #0003;transition:transform .45s var(--spring)}
+.spectrum-key[aria-pressed=true]{border-color:var(--swatch);color:var(--tx);background:color-mix(in srgb,var(--swatch) 16%,transparent)}
+.spectrum-key[aria-pressed=true] i{transform:scale(.8)}
+.prism-desk .desk-stack{padding:30px 0 0;isolation:isolate}
+.prism-sail{position:absolute;inset:-20px -10px 10px;z-index:-1;pointer-events:none}
+.prism-sail i{position:absolute;width:78%;height:100%;border-radius:50% 12% 50% 12%;border:1px solid #ffffff4d;transform:rotate(26deg);background:linear-gradient(120deg,color-mix(in srgb,var(--tone) 28%,transparent),#ffffff05 45%,color-mix(in srgb,var(--tone2) 24%,transparent));animation:sailFloat 12s ease-in-out infinite alternate}
+.prism-sail i:nth-child(2){left:18%;transform:rotate(-16deg);animation-delay:-4s}.prism-sail i:nth-child(3){left:10%;width:70%;transform:rotate(55deg);animation-delay:-8s}
+@keyframes sailFloat{from{translate:0 -5px}to{translate:0 7px}}
+.prism-desk .hero-time{transform:none;animation:none;border-radius:28px;width:100%;padding:30px;min-width:0;background:linear-gradient(130deg,#ffffff16,#ffffff04)!important;border:1px solid color-mix(in srgb,var(--tone) 45%,var(--line));-webkit-backdrop-filter:blur(6px) saturate(140%);backdrop-filter:blur(6px) saturate(140%)}
+.prism-desk .bigclock{font-family:var(--display);font-size:clamp(72px,8vw,112px);margin:45px 0 28px;letter-spacing:-.085em}
+.prism-desk .desk-tab{top:0;left:26px;rotate:0;background:#ffffff0c;letter-spacing:.1em}
+.prism-desk .desk-slip{margin:12px 0 0 auto;rotate:0;width:84%;border-radius:18px;padding:18px;animation:none}
+.home-section h2{font-family:var(--display);font-size:32px;letter-spacing:-.06em}.bt{border-radius:24px!important}
+.bt .bth{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+.dock,.bar,.barglass{border-radius:22px}
+@media(max-width:899px){.prism-desk{gap:24px;grid-template-columns:1fr;padding-top:28px}.prism-desk .hero-title{font-size:clamp(70px,15vw,112px)}.prism-desk .desk-stack{width:min(100%,560px);justify-self:center}.prism-desk .bigclock{font-size:clamp(70px,19vw,110px)}.prism-desk .hero-actions{gap:14px}.prism-desk .desk-id{font-size:7px}}
+@media(max-width:600px){.prism-desk{padding-bottom:26px}.prism-desk .hero-copy{display:grid;grid-template-columns:1fr;min-width:0}.prism-desk .hero-title{font-size:86px}.prism-desk .greet{margin-top:22px}.orbit-deck{font-size:18px;margin:20px 0 0}.spectrum{margin-top:22px}.spectrum-key{width:40px;padding:7px}.spectrum-keys{gap:6px}.prism-desk .hero-time{padding:24px}.prism-desk .bigclock{margin:32px 0 25px}.prism-desk .cursor-notch{right:5%}.prism-desk .desk-slip{width:92%;padding:15px}.prism-sail{inset:0 0 20px}.home-section>div{gap:10px}.home-section>p{display:none}}
+@media(max-width:370px){.spectrum-key{width:36px;padding:6px}.prism-desk .hero-title{font-size:76px}.prism-desk .hero-actions{gap:10px}.prism-desk .desk-link{font-size:10px;gap:5px}.prism-desk .hero-time{padding:20px}.prism-desk .bigclock{font-size:70px}.home-section h2{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.current-light,.prism-sail i,.touch-caustic{animation:none!important}.current-light,.spectrum-key i{transition:none}}
+html.fx-hidden .prism-sail i{animation-play-state:paused}

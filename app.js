@@ -134,27 +134,28 @@ let homeNews=[],homeEditing=false,hDrag=null,hDropAt=0;
 function wFrame(id,w){const tag=w.tag||'section';return `<${tag} ${w.href?`href="${w.href}"`:''} ${w.id?`id="${w.id}"`:''} class="glass bt ${w.cls} rv" data-w="${id}" ${w.style?`style="${w.style}"`:''}>${w.inner}<button class="wx" data-hide="${id}" aria-label="Hide ${WNAMES[id]}" tabindex="-1">−</button></${tag}>`}
 function trayHTML(){const h=S.home.hidden;return h.length?`<span class="small muted">Hidden:</span>${h.map(id=>`<button class="chip tap" data-show="${id}">${ic('plus','gi')} ${WNAMES[id]}</button>`).join('')}`:'<span class="small muted">Long-press or drag a widget to move it. Tap − to hide one.</span>'}
 V.home=()=>{const W=homeWidgets(),ord=homeOrder().filter(id=>!S.home.hidden.includes(id)),articles=homeNews.length,events=blocksFor(today()).length;
- return `<section class="hero desk-hero"><div class="hero-copy px">
-  <div class="desk-id"><span>PERSONAL DESK</span><span>01 / HQ</span></div>
-  <p class="greet">${greetHTML()}</p><h1 class="hero-title">aarav<span class="cursor-notch">_</span></h1>
-  <div class="desk-note">a few things worth<br><i>keeping open.</i><svg viewBox="0 0 220 30" aria-hidden="true"><path d="M5 23C45 7 136 4 208 12M144 24l64-12-13-8"/></svg></div>
+ return `<section class="hero desk-hero prism-desk"><div class="hero-copy px">
+  <div class="desk-id"><span>AARAV / PERSONAL SPACE</span><span>VOL. 01</span></div>
+  <p class="greet">${greetHTML()}</p><h1 class="hero-title">your<br><em>orbit.</em><span class="cursor-notch">↗</span></h1>
+  <p class="orbit-deck">A little signal. A good record.<br>A space that feels like you.</p>
+  <div class="spectrum" aria-label="Change the colour world"><span class="spectrum-label">MOVE THE LIGHT</span><div class="spectrum-keys">${['Tidal','Apricot','Iris','Canopy','Afterglow','Blue hour'].map((name,i)=>`<button class="spectrum-key tap" data-scene="${i}" aria-label="${name} colour world" aria-pressed="false" style="--swatch:${['#23d9d1','#ff965c','#b491ff','#56dfa1','#f080b6','#5c91ff'][i]}"><i></i><span>0${i+1}</span></button>`).join('')}</div></div>
   <p class="ctx" id="ctx">${ctxLine()}</p>
   <div class="hero-actions"><a href="#news" class="desk-link tap"><span>03</span> The signal ${ic('chevR')}</a><a href="#music" class="desk-link tap"><span>04</span> The rotation ${ic('chevR')}</a><a href="#vault" class="desk-link tap"><span>06</span> The keepsakes ${ic('chevR')}</a></div>
   </div><div class="desk-stack">
-  <svg class="desk-ribbon" viewBox="0 0 620 520" fill="none" aria-hidden="true"><defs><linearGradient id="ribbon-glass" x1="40" y1="70" x2="540" y2="430" gradientUnits="userSpaceOnUse"><stop stop-color="#f0efcc" stop-opacity=".4"/><stop offset=".44" stop-color="#80cfb4" stop-opacity=".08"/><stop offset=".7" stop-color="#93a6f4" stop-opacity=".3"/><stop offset="1" stop-color="#f5caaa" stop-opacity=".08"/></linearGradient><linearGradient id="ribbon-rim" x1="60" y1="20" x2="480" y2="470" gradientUnits="userSpaceOnUse"><stop stop-color="#ffffee" stop-opacity=".85"/><stop offset=".4" stop-color="#b7e4d7" stop-opacity=".08"/><stop offset=".7" stop-color="#c3cffc" stop-opacity=".65"/><stop offset="1" stop-color="#dbe4cf" stop-opacity=".2"/></linearGradient></defs><path d="M85 410C-50 215 203-49 395 79C645 245 387 508 211 358C39 211 234 44 508 212" stroke="url(#ribbon-glass)" stroke-width="65"/><path d="M62 431C-80 220 204-91 415 51C700 239 392 556 189 383C-1 219 224 1 519 181" stroke="url(#ribbon-rim)" stroke-width="1.2"/><path d="M107 389C-18 210 206-8 375 107C591 251 381 462 233 333C86 205 241 88 496 244" stroke="url(#ribbon-rim)" stroke-width="1"/></svg>
+  <div class="prism-sail" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="desk-tab" aria-hidden="true"><span class="live-dot"></span> LOCAL TIME</div>
-  <div class="hero-time glass tap"><i class="clock-reflection" aria-hidden="true"></i><div class="clock-label"><span>NOW /</span><span>LIVE</span></div>
+  <div class="hero-time glass tap"><i class="clock-reflection" aria-hidden="true"></i><div class="clock-label"><span>YOUR LOCAL ORBIT</span><span>LIVE</span></div>
   <div class="bigclock" id="bigClock" aria-label="Current time">${heroClock()}</div>
   <div class="hdate"><span>${new Date().toLocaleDateString('en-IN',{weekday:'long'})}</span><b>${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</b><span>${esc((S.wx&&S.wx.place)||S.settings.city.name.split(',')[0])}</span></div>
   <div class="desk-scale" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   </div><div class="desk-slip glass"><span class="slip-mark">↗</span><div><span class="slip-caption">ON THE DESK</span><a href="#news" class="tap" id="deskStoryCount">${articles} stories</a><a href="#cal" class="tap">${events} event${events===1?'':'s'}</a></div><span class="slip-code">HQ<br>001</span></div>
   </div></section>
- <div class="home-section"><div><span class="section-number">01—10</span><h2>Open tabs<span>.</span></h2></div><p>Picked up where you left off.</p><a class="more-link tap" href="#more">The drawer ${ic('chevR')}</a></div>
+ <div class="home-section"><div><span class="section-number">01—10</span><h2>Your spaces<span>.</span></h2></div><p>Keep the good things close.</p><a class="more-link tap" href="#more">The drawer ${ic('chevR')}</a></div>
  <div class="bento ${homeEditing?'editing':''}" id="bento">${ord.map(id=>wFrame(id,W[id])).join('')}</div>
  <div class="hfoot"><div class="htray" id="hTray" ${homeEditing?'':'hidden'}>${trayHTML()}</div><button class="btn ghost sm tap" id="homeEditBtn">${homeEditing?'Done':ic('grid')+' Edit widgets'}</button></div>`};
 
 V.home.ptr=()=>Promise.all([loadWeather(true),loadNews('ai'),loadNews('games'),loadNews('movies')]).then(()=>{if(document.body.dataset.view==='home')render()});
-V.home.after=()=>{loadWeather();if(!fxCache()||Date.now()-fxCache().at>6*36e5)loadFx();
+V.home.after=()=>{if(window.ATM)ATM.refresh();loadWeather();if(!fxCache()||Date.now()-fxCache().at>6*36e5)loadFx();
  const stale=['ai','games','movies'];
  if(stale.length){Promise.all(stale.map(k=>loadNews(k))).then(r=>{if(r.some(Boolean)&&document.body.dataset.view==='home'&&!homeEditing&&!hDrag){const w=document.querySelector('[data-w=news]');if(w){const W=homeWidgets();const count=document.getElementById('deskStoryCount');if(count)count.textContent=homeNews.length+' stories';w.innerHTML=W.news.inner+`<button class="wx" data-hide="news" aria-label="Hide For you" tabindex="-1">−</button>`;FX.refresh()}}})}
  const g=$('#bento');

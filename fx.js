@@ -19,16 +19,16 @@ if(ENABLE_REFRACTION&&isChromium&&!RM.matches){try{
  const set=(id,url)=>{const e=document.getElementById(id);e.setAttribute('href',url);e.setAttributeNS('http://www.w3.org/1999/xlink','href',url)};
  set('map-pill',makeMap(360,64,22,2.2));set('map-card',makeMap(220,160,26,2.6));root.classList.add('lgsvg')}catch(e){}}
 // --- reactive light: pointer, touch, tilt and scroll steer one virtual light source
-const L={x:innerWidth*.3,y:-80,tx:innerWidth*.3,ty:-80};let vis=new Set(),tracked=new Set(),reveals=new Set(),raf=0;
+const L={x:innerWidth*.3,y:-80,tx:innerWidth*.3,ty:-80,target:null};let vis=new Set(),tracked=new Set(),reveals=new Set(),raf=0;
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?vis.add(e.target):vis.delete(e.target)),{rootMargin:'80px'});
 let scrolling=false,scrollT=0;
 function frame(){raf=0;if(scrolling||document.hidden||MOBILE||RM.matches)return;L.x+=(L.tx-L.x)*.18;L.y+=(L.ty-L.y)*.18;
  // read every rect first, then write: no layout thrash
- const els=[...vis].filter(el=>{if(el.isConnected)return true;vis.delete(el);tracked.delete(el);io.unobserve(el);return false}),rs=els.map(el=>el.getBoundingClientRect());
+ const els=[...vis].filter(el=>{if(el!==L.target)return false;if(el.isConnected)return true;vis.delete(el);tracked.delete(el);io.unobserve(el);return false}),rs=els.map(el=>el.getBoundingClientRect());
  els.forEach((el,k)=>{el.style.setProperty('--mx',(L.x-rs[k].left).toFixed(0)+'px');el.style.setProperty('--my',(L.y-rs[k].top).toFixed(0)+'px')});
  if(Math.abs(L.tx-L.x)>.5||Math.abs(L.ty-L.y)>.5)kick()}
 const kick=()=>{if(!raf&&!scrolling&&!MOBILE&&!RM.matches&&!document.hidden)raf=requestAnimationFrame(frame)};
-addEventListener('pointermove',e=>{L.tx=e.clientX;L.ty=e.clientY;kick()},{passive:true});
+addEventListener('pointermove',e=>{L.target=e.target.closest('.glass,.lg');L.tx=e.clientX;L.ty=e.clientY;kick()},{passive:true});
 addEventListener('pointerdown',e=>{L.tx=e.clientX;L.ty=e.clientY;kick()},{passive:true});
 let tiltOn=false;
 document.addEventListener('visibilitychange',()=>{root.classList.toggle('fx-hidden',document.hidden);if(document.hidden&&raf){cancelAnimationFrame(raf);raf=0}else kick()});

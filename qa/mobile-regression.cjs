@@ -11,9 +11,16 @@ async function capture(){await w.HQPLUS.capture();await tick()}
  const rootStyle=w.document.documentElement.style;
  w.testS.settings.atmosphere='flow';w.ATM.refresh();const restingTone=rootStyle.getPropertyValue('--tone');
  w.ATM.palette(['#3756cc','#147b93','#b8588a','#754bd1'],Date.now()+900000);assert.equal(rootStyle.getPropertyValue('--tone'),restingTone,'Idle time must not cycle the palette');
- $('#qcBtn').dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.notEqual(rootStyle.getPropertyValue('--tone'),restingTone,'Touch changes the flow palette');
+ $('#qcBtn').dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.equal(rootStyle.getPropertyValue('--tone'),restingTone,'Ordinary controls do not repaint the whole palette');
  w.testS.settings.atmosphere='tidal';w.ATM.refresh();const pinnedTone=rootStyle.getPropertyValue('--tone');$('#qcBtn').dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.equal(rootStyle.getPropertyValue('--tone'),pinnedTone,'Pinned colour world remains pinned');
  w.testS.settings.atmosphere='flow';w.ATM.refresh();
+ await route('home');const sceneKeys=[...w.document.querySelectorAll('[data-scene]')];assert.equal(sceneKeys.length,6);
+ sceneKeys[2].click();assert.equal(rootStyle.getPropertyValue('--tone'),'#b491ff','Explicit spectrum changes are visible');assert.equal(sceneKeys[2].getAttribute('aria-pressed'),'true');
+ Object.defineProperty(w,'scrollY',{value:1700,writable:true,configurable:true});
+ for(let i=0;i<25;i++)w.dispatchEvent(new w.Event('scroll'));
+ assert.equal(rootStyle.getPropertyValue('--tone'),'#b491ff','Scroll frames do not repaint the palette');
+ await new Promise(r=>setTimeout(r,260));assert.notEqual(rootStyle.getPropertyValue('--tone'),'#b491ff','Long scroll changes light after the gesture');
+ w.scrollY=0;await route('vault');
  Object.defineProperty(w,'innerWidth',{value:320,configurable:true});Object.defineProperty(w,'innerHeight',{value:667,configurable:true});
  w.visualViewport={height:367,offsetTop:0};
  await capture();assert.ok(w.document.documentElement.classList.contains('sheet-open'));
