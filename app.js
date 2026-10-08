@@ -75,18 +75,18 @@ function wxInner(){const w=S.wx;if(!w||!w.cur)return S.wxErr?`<div class="wxin w
  <div class="small muted" style="margin-top:10px">Sunrise ${w.sunrise} · Sunset ${w.sunset}</div></div>`}
 // ---------- HOME ----------
 function greetHTML(){const h=istHour();return h<5?'Late <i>night.</i>':h<12?'Good <i>morning.</i>':h<17?'Good <i>afternoon.</i>':'Good <i>evening.</i>'}
-function ctxLine(){const w=S.wx&&S.wx.cur,t=today(),bl=blocksFor(t),hm=nowHM(),nx=bl.find(b=>!b.allDay&&b.end>hm),h=istHour();let s;
- if(w){const T=Math.round(w.t),k=wkind(w.code);s=k==='rain'?`Rain outside, ${T}°. Perfect weather for deep work.`:k==='storm'?`Thunder around, ${T}°. Stay in and make something.`:k==='snow'?`Snow, ${T}°. Hot drink, long session.`:k==='fog'?`Foggy and ${T}°. Soft focus outside, sharp focus inside.`:k==='clouds'?`Grey skies, ${T}°. Calm light for a calm mind.`:w.day?`${k==='clear'?'Clear skies':'Bright and breezy'}, ${T}°. A good day to do something big.`:`A ${k==='clear'?'clear':'quiet'} night, ${T}°. ${h>=23||h<5?'Rest is part of the plan.':'One last sprint, then rest.'}`}
- else s=h<12?'A fresh page. What will you write on it?':h<18?'Plenty of day left. Make it count.':'The day is winding down. Finish gently.';
- if(nx)s+=` Next up: <b>${esc(nx.title)}</b> at ${nx.start}.`;else if(bl.length===0&&h<20)s+=' Your calendar is wide open.';
+function ctxLine(){const w=S.wx&&S.wx.cur,bl=blocksFor(today()),nx=bl.find(b=>!b.allDay&&b.end>nowHM());let s='Your desk is open.';
+ if(w){const k=wkind(w.code),label={clear:w.day?'Clear skies':'Clear night',rain:'Rain outside',storm:'Thunderstorms',snow:'Snow outside',fog:'Fog outside',clouds:'Cloudy skies'};s=`${label[k]||'Outside right now'} · ${Math.round(w.t)}°.`}
+ if(nx)s+=` Next: <b>${esc(nx.title)}</b> at ${nx.start}.`;else if(!bl.length)s+=' No plans on the calendar.';
  return s}
 const fmtHM=d=>({h:String(d.getHours()).padStart(2,'0'),m:String(d.getMinutes()).padStart(2,'0'),s:String(d.getSeconds()).padStart(2,'0')});
 function heroClock(){const c=fmtHM(new Date());return `<span class="hh">${c.h}</span><span class="mm"><span class="col" aria-hidden="true"><i></i><i></i></span><span class="md">${c.m}</span><span class="ss" id="hss">${c.s}</span></span>`}
 const EMPTY=(g,t,p,extra='')=>`<div class="empty"><div class="glyph">${g}</div><div class="ed">${t}</div><p>${p}</p>${extra}</div>`;
 // ---------- HOME: hero + reorderable widgets ----------
-const WDEF=['recap','weather','today','focus','habits','music','news','goals','notes','tools'];
+const OLD_WDEF=['recap','weather','today','focus','habits','music','news','goals','notes','tools'];
+const WDEF=['news','music','weather','today','notes','tools','recap','goals','habits','focus'];
 const WNAMES={recap:'Daily recap',weather:'Weather',today:'Today',focus:'Focus',habits:'Habits',music:'Music',news:'For you',goals:'Goals',notes:'Notes',tools:'Tools'};
-function homeOrder(){const h=S.home;let o=(Array.isArray(h.order)?h.order:[]).filter((x,i,a)=>WDEF.includes(x)&&a.indexOf(x)===i);WDEF.forEach(x=>{if(!o.includes(x))o.splice(Math.min(WDEF.indexOf(x),o.length),0,x)});h.order=o;if(!Array.isArray(h.hidden))h.hidden=[];h.hidden=h.hidden.filter(x=>WDEF.includes(x));return o}
+function homeOrder(){const h=S.home;if(Array.isArray(h.order)&&h.order.join('|')===OLD_WDEF.join('|'))h.order=[...WDEF];let o=(Array.isArray(h.order)?h.order:[]).filter((x,i,a)=>WDEF.includes(x)&&a.indexOf(x)===i);WDEF.forEach(x=>{if(!o.includes(x))o.splice(Math.min(WDEF.indexOf(x),o.length),0,x)});h.order=o;if(!Array.isArray(h.hidden))h.hidden=[];h.hidden=h.hidden.filter(x=>WDEF.includes(x));return o}
 const ringC=r=>2*Math.PI*r;
 function recapData(day){const t=day||today(),td=S.todos.filter(x=>x.date===t),hl=S.habitLog[t]||{};
  return{t,fm:S.focus[t]||0,goal:120,dn:td.filter(x=>x.done).length,tg:td.length,open:td.filter(x=>!x.done).length,hd:S.habits.filter(x=>hl[x.id]).length,th:S.habits.length,ev:blocksFor(t).length,
@@ -133,24 +133,30 @@ function homeWidgets(){const t=today(),td=S.todos.filter(x=>x.date===t),dn=td.fi
 let homeNews=[],homeEditing=false,hDrag=null,hDropAt=0;
 function wFrame(id,w){const tag=w.tag||'section';return `<${tag} ${w.href?`href="${w.href}"`:''} ${w.id?`id="${w.id}"`:''} class="glass bt ${w.cls} rv" data-w="${id}" ${w.style?`style="${w.style}"`:''}>${w.inner}<button class="wx" data-hide="${id}" aria-label="Hide ${WNAMES[id]}" tabindex="-1">−</button></${tag}>`}
 function trayHTML(){const h=S.home.hidden;return h.length?`<span class="small muted">Hidden:</span>${h.map(id=>`<button class="chip tap" data-show="${id}">${ic('plus','gi')} ${WNAMES[id]}</button>`).join('')}`:'<span class="small muted">Long-press or drag a widget to move it. Tap − to hide one.</span>'}
-V.home=()=>{const t=today(),td=S.todos.filter(x=>x.date===t),dn=td.filter(x=>x.done).length,fm=S.focus[t]||0,hl=S.habitLog[t]||{},hd=S.habits.filter(x=>hl[x.id]).length;
- const W=homeWidgets(),ord=homeOrder().filter(id=>!S.home.hidden.includes(id));
- return `<section class="hero"><div class="hero-copy px">
-  <div class="kicker plain hero-eyebrow">AARAV HQ · YOUR PERSONAL SPACE</div>
-  <p class="greet">${greetHTML()}</p><h1 class="hero-title">Your world.<br><span>At a glance.</span></h1>
+V.home=()=>{const W=homeWidgets(),ord=homeOrder().filter(id=>!S.home.hidden.includes(id)),articles=homeNews.length,events=blocksFor(today()).length;
+ return `<section class="hero desk-hero"><div class="hero-copy px">
+  <div class="desk-id"><span>PERSONAL DESK</span><span>01 / HQ</span></div>
+  <p class="greet">${greetHTML()}</p><h1 class="hero-title">aarav<span class="cursor-notch">_</span></h1>
+  <div class="desk-note">a few things worth<br><i>keeping open.</i><svg viewBox="0 0 220 30" aria-hidden="true"><path d="M5 23C45 7 136 4 208 12M144 24l64-12-13-8"/></svg></div>
   <p class="ctx" id="ctx">${ctxLine()}</p>
-  <div class="hero-actions"><a href="#news" class="btn pri tap">Explore your feed ${ic('chevR')}</a><a href="#music" class="btn ghost tap">Find your sound ${ic('chevR')}</a></div>
-  </div><div class="hero-time glass"><i class="clock-reflection" aria-hidden="true"></i><div class="clock-label"><span class="live-dot" aria-hidden="true"></span> RIGHT HERE. RIGHT NOW.</div>
+  <div class="hero-actions"><a href="#news" class="desk-link tap"><span>03</span> The signal ${ic('chevR')}</a><a href="#music" class="desk-link tap"><span>04</span> The rotation ${ic('chevR')}</a></div>
+  </div><div class="desk-stack">
+  <svg class="desk-ribbon" viewBox="0 0 620 520" fill="none" aria-hidden="true"><defs><linearGradient id="ribbon-glass" x1="40" y1="70" x2="540" y2="430" gradientUnits="userSpaceOnUse"><stop stop-color="#f0efcc" stop-opacity=".4"/><stop offset=".44" stop-color="#80cfb4" stop-opacity=".08"/><stop offset=".7" stop-color="#93a6f4" stop-opacity=".3"/><stop offset="1" stop-color="#f5caaa" stop-opacity=".08"/></linearGradient><linearGradient id="ribbon-rim" x1="60" y1="20" x2="480" y2="470" gradientUnits="userSpaceOnUse"><stop stop-color="#ffffee" stop-opacity=".85"/><stop offset=".4" stop-color="#b7e4d7" stop-opacity=".08"/><stop offset=".7" stop-color="#c3cffc" stop-opacity=".65"/><stop offset="1" stop-color="#dbe4cf" stop-opacity=".2"/></linearGradient></defs><path d="M85 410C-50 215 203-49 395 79C645 245 387 508 211 358C39 211 234 44 508 212" stroke="url(#ribbon-glass)" stroke-width="65"/><path d="M62 431C-80 220 204-91 415 51C700 239 392 556 189 383C-1 219 224 1 519 181" stroke="url(#ribbon-rim)" stroke-width="1.2"/><path d="M107 389C-18 210 206-8 375 107C591 251 381 462 233 333C86 205 241 88 496 244" stroke="url(#ribbon-rim)" stroke-width="1"/></svg>
+  <div class="desk-tab" aria-hidden="true"><span class="live-dot"></span> LOCAL TIME</div>
+  <div class="hero-time glass tap"><i class="clock-reflection" aria-hidden="true"></i><div class="clock-label"><span>NOW /</span><span>LIVE</span></div>
   <div class="bigclock" id="bigClock" aria-label="Current time">${heroClock()}</div>
-  <div class="hdate">${new Date().toLocaleDateString('en-IN',{weekday:'long'})} · ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}<span>${esc((S.wx&&S.wx.place)||S.settings.city.name.split(',')[0])}</span></div>
-  <div class="chips"><a href="#focus" class="hchip tap"><b>${fm}m</b> focused</a><a href="#goals" class="hchip tap"><b>${dn}/${td.length}</b> goals</a><a href="#habits" class="hchip tap"><b>${hd}/${S.habits.length}</b> habits</a></div></div></section>
- <div class="home-section"><div><div class="kicker plain">MADE FOR YOUR EVERYDAY</div><h2>A little of everything.<br><span>All in one place.</span></h2></div><a class="more-link tap" href="#more">Explore HQ ${ic('chevR')}</a></div>
+  <div class="hdate"><span>${new Date().toLocaleDateString('en-IN',{weekday:'long'})}</span><b>${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</b><span>${esc((S.wx&&S.wx.place)||S.settings.city.name.split(',')[0])}</span></div>
+  <div class="desk-scale" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div><div class="desk-slip glass"><span class="slip-mark">↗</span><div><span class="slip-caption">ON THE DESK</span><a href="#news" class="tap" id="deskStoryCount">${articles} stories</a><a href="#cal" class="tap">${events} event${events===1?'':'s'}</a></div><span class="slip-code">HQ<br>001</span></div>
+  </div></section>
+ <div class="home-section"><div><span class="section-number">01—10</span><h2>Open tabs<span>.</span></h2></div><p>Picked up where you left off.</p><a class="more-link tap" href="#more">The drawer ${ic('chevR')}</a></div>
  <div class="bento ${homeEditing?'editing':''}" id="bento">${ord.map(id=>wFrame(id,W[id])).join('')}</div>
  <div class="hfoot"><div class="htray" id="hTray" ${homeEditing?'':'hidden'}>${trayHTML()}</div><button class="btn ghost sm tap" id="homeEditBtn">${homeEditing?'Done':ic('grid')+' Edit widgets'}</button></div>`};
+
 V.home.ptr=()=>Promise.all([loadWeather(true),loadNews('ai'),loadNews('games'),loadNews('movies')]).then(()=>{if(document.body.dataset.view==='home')render()});
 V.home.after=()=>{loadWeather();if(!fxCache()||Date.now()-fxCache().at>6*36e5)loadFx();
  const stale=['ai','games','movies'];
- if(stale.length){Promise.all(stale.map(k=>loadNews(k))).then(r=>{if(r.some(Boolean)&&document.body.dataset.view==='home'&&!homeEditing&&!hDrag){const w=document.querySelector('[data-w=news]');if(w){const W=homeWidgets();w.innerHTML=W.news.inner+`<button class="wx" data-hide="news" aria-label="Hide For you" tabindex="-1">−</button>`;FX.refresh()}}})}
+ if(stale.length){Promise.all(stale.map(k=>loadNews(k))).then(r=>{if(r.some(Boolean)&&document.body.dataset.view==='home'&&!homeEditing&&!hDrag){const w=document.querySelector('[data-w=news]');if(w){const W=homeWidgets();const count=document.getElementById('deskStoryCount');if(count)count.textContent=homeNews.length+' stories';w.innerHTML=W.news.inner+`<button class="wx" data-hide="news" aria-label="Hide For you" tabindex="-1">−</button>`;FX.refresh()}}})}
  const g=$('#bento');
  g.addEventListener('click',e=>{if(homeEditing||hDrag||Date.now()-hDropAt<400){const hb=e.target.closest('[data-hide]');e.preventDefault();e.stopPropagation();if(hb&&homeEditing)hideWidget(hb.dataset.hide);return}
   const n=e.target.closest('[data-hn]');if(n){openReader(homeNews,+n.dataset.hn,n.querySelector('img'));return}
@@ -308,7 +314,7 @@ document.addEventListener('keydown',e=>{if(location.hash!=='#calc'||e.target.mat
 V.tools=()=>`<section class="phead"><div class="kicker">Utilities</div><div class="ptitle">Tools<i>.</i></div></section>
  <section class="menu">${[['convert','fx','Currency','Live rates vs ₹'],['clocks','clock','World clock',S.clocks.length+' cities'],['calc','calc','Calculator',S.calcHist.length+' in history'],['timers','timer','Timers',timerSummary()]].map(([h,i,n,s])=>`<a href="#${h}" class="glass mtile rv tap"><span class="mi">${ic(i)}</span><div><b>${n}</b><span>${s}</span></div></a>`).join('')}</section>`;
 // ---------- MORE ----------
-V.more=()=>`<section class="phead"><div class="kicker">Everything else</div><div class="ptitle">More<i>.</i></div></section>
+V.more=()=>`<section class="phead"><div class="kicker plain">05 / YOUR TOOLS</div><div class="ptitle">the drawer<i>.</i></div></section>
  <section class="menu">${[['focus','focus','Focus',S.timer?'Running now':(S.focus[today()]||0)+' min today'],['goals','goals','Goals',S.todos.filter(x=>x.date===today()&&!x.done).length+' open'],['notes','notes','Notes',S.notes.length+' notes'],['habits','habits','Habits',S.habits.length+' tracked'],['convert','fx','Currency','Live INR rates'],['clocks','clock','World clock',S.clocks.length+' cities'],['calc','calc','Calculator','With history'],['timers','timer','Timers',timerSummary()],['stats','stats','Stats',streak(focusSet())+'-day streak'],['settings','settings','Settings','Theme, data, location']].map(([h,i,n,s])=>`<a href="#${h}" class="glass mtile rv tap"><span class="mi">${ic(i)}</span><div><b>${n}</b><span>${s}</span></div></a>`).join('')}</section>`;
 
 function askNotify(){if(!('Notification' in window)||Notification.permission!=='default')return Promise.resolve();return Notification.requestPermission().catch(()=>{})}
