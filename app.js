@@ -197,10 +197,10 @@ setInterval(()=>{const c=document.getElementById('bigClock');if(c){const f=fmtHM
  document.querySelectorAll('[data-tz]').forEach(e=>e.textContent=tzTime(e.dataset.tz))},1000);
 function toggleHabit(id,d){const l=S.habitLog[d]||(S.habitLog[d]={});if(l[id])delete l[id];else l[id]=true;save()}
 // ---------- GENERIC SHEET ----------
-const gs=document.createElement('div');gs.className='sheet lg pillglass';gs.id='gsheet';gs.setAttribute('role','dialog');document.body.appendChild(gs);
+const gs=document.createElement('div');gs.className='sheet lg pillglass';gs.id='gsheet';gs.inert=true;gs.setAttribute('role','dialog');document.body.appendChild(gs);
 let sheetOpener=null;
-function openSheet(html,mount){window.dispatchEvent(new Event('hq-before-close-sheet'));gs.classList.remove('embed-sheet');if(!document.body.classList.contains('qc'))sheetOpener=document.activeElement;gs.innerHTML=html;gs.classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');mount&&mount(gs);FX.refresh()}
-function closeSheets(){window.dispatchEvent(new Event('hq-before-close-sheet'));const wasOpen=document.body.classList.contains('qc');gs.classList.remove('on');$('#sheet').classList.remove('on');$('#scrim').classList.remove('on');document.body.classList.remove('qc');
+function openSheet(html,mount){window.dispatchEvent(new Event('hq-before-close-sheet'));gs.classList.remove('embed-sheet');gs.inert=false;if(!document.body.classList.contains('qc'))sheetOpener=document.activeElement;gs.innerHTML=html;gs.classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');mount&&mount(gs);FX.refresh()}
+function closeSheets(){window.dispatchEvent(new Event('hq-before-close-sheet'));const wasOpen=document.body.classList.contains('qc');gs.inert=true;$('#sheet').inert=true;gs.classList.remove('on');$('#sheet').classList.remove('on');$('#scrim').classList.remove('on');document.body.classList.remove('qc');
  const a=document.activeElement;if(a&&a!==document.body&&(gs.contains(a)||$('#sheet').contains(a)))a.blur();
  if(wasOpen){const o=sheetOpener;sheetOpener=null;if(o&&o!==document.body&&o.isConnected&&!gs.contains(o)&&!$('#sheet').contains(o)&&o.offsetParent!==null)try{o.focus({preventScroll:true})}catch(e){}}}
 // ---------- CALENDAR ----------

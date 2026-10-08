@@ -26,12 +26,12 @@ $('#themeBtn').onclick=()=>{const o=['system','light','dark'];S.settings.theme=o
 applyTheme();applyWxMood();
 let qcKind='goal';
 function qcOpen(k){if(k){qcKind=k;document.querySelectorAll('#qcSeg button').forEach(x=>x.classList.toggle('on',x.dataset.k===k));$('#qcText').placeholder=k==='goal'?'One thing that would make today a win…':'Capture a thought…'}qc(true)}
-function qc(open){if(open){if(!document.body.classList.contains('qc'))sheetOpener=document.activeElement;$('#sheet').classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');setTimeout(()=>$('#qcText').focus(),120);FX.seg()}else closeSheets()}
+function qc(open){if(open){$('#sheet').inert=false;if(!document.body.classList.contains('qc'))sheetOpener=document.activeElement;$('#sheet').classList.add('on');$('#scrim').classList.add('on');document.body.classList.add('qc');setTimeout(()=>$('#qcText').focus(),120);FX.seg()}else closeSheets()}
 $('#qcBtn').onclick=()=>{if(document.body.classList.contains('qc'))closeSheets();else window.HQPLUS?HQPLUS.capture():qc(true)};$('#scrim').onclick=closeSheets;$('#qcCancel').onclick=closeSheets;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.body.classList.contains('spot'))closeSheets()});
 document.querySelectorAll('#qcSeg button').forEach(b=>b.onclick=()=>{qcKind=b.dataset.k;document.querySelectorAll('#qcSeg button').forEach(x=>x.classList.toggle('on',x===b));FX.seg();$('#qcText').placeholder=qcKind==='goal'?'One thing that would make today a win…':'Capture a thought…'});
-$('#qcText').placeholder='One thing that would make today a win…';
-$('#qcForm').onsubmit=e=>{e.preventDefault();const v=$('#qcText').value.trim();if(!v)return;if(qcKind==='goal')S.todos.push({id:uid(),text:v.slice(0,140),done:false,date:today()});else S.notes.push({id:uid(),text:v,pinned:false,created:Date.now(),updated:Date.now()});save();$('#qcText').value='';closeSheets();toast(qcKind==='goal'?'Goal added to today ✓':'Note saved ✓');render()};
+$('#qcText').placeholder='One thing that would make today a win…';$('#sheet').inert=true;try{$('#qcText').value=localStorage.getItem('hq:draft:quick')||''}catch(e){}$('#qcText').oninput=()=>{try{localStorage.setItem('hq:draft:quick',$('#qcText').value)}catch(e){toast('Could not save this draft. Keep the sheet open.')}};
+$('#qcForm').onsubmit=e=>{e.preventDefault();const v=$('#qcText').value.trim();if(!v)return;if(qcKind==='goal')S.todos.push({id:uid(),text:v.slice(0,140),done:false,date:today()});else S.notes.push({id:uid(),text:v,pinned:false,created:Date.now(),updated:Date.now()});const stored=save();if(!stored)return;$('#qcText').value='';try{localStorage.removeItem('hq:draft:quick')}catch(e){}closeSheets();toast(qcKind==='goal'?'Goal added to today ✓':'Note saved ✓');render()};
 const TABOF={vault:'more',browse:'more',routines:'more',play:'more',goals:'more',notes:'more',habits:'more',stats:'more',settings:'more',focus:'more',tools:'more',convert:'more',clocks:'more',calc:'more',timers:'more'};
 const ORDER=['home','cal','news','music','more'];
 let vtSrc=null,curVT=null;
