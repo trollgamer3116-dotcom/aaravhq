@@ -130,6 +130,7 @@ function homeWidgets(){const t=today(),td=S.todos.filter(x=>x.date===t),dn=td.fi
   tools:{tag:'a',href:'#tools',cls:'s2 d3 tap',inner:`<div class="row between"><div class="kicker">Tools</div><span class="more-link">Open ${ic('chevR')}</span></div>
    ${runT.length?`<div class="trun">${runT.map(x=>`<span class="chip a" data-tmr="${x.id}">${ic('timer','gi')} <b>${fmtLeft(x)}</b> ${esc(x.label)}</span>`).join('')}</div>`:''}
    <div class="toolrow"><div><div class="bignum" style="font-size:34px">${usd?'₹'+usd.toFixed(2):'₹—'}</div><div class="small muted">1 USD</div></div>${(S.clocks||[]).slice(1,3).map(c=>`<div><div class="bignum" style="font-size:34px" data-tz="${esc(c.tz)}">${tzTime(c.tz)}</div><div class="small muted">${esc(c.name)}</div></div>`).join('')}</div>`}}}
+const deskStories=n=>n?n+(n===1?' new story':' new stories'):'News is warming up';
 let homeNews=[],homeEditing=false,hDrag=null,hDropAt=0;
 function wFrame(id,w){const tag=w.tag||'section';return `<${tag} ${w.href?`href="${w.href}"`:''} ${w.id?`id="${w.id}"`:''} class="glass bt ${w.cls} rv" data-w="${id}" ${w.style?`style="${w.style}"`:''}>${w.inner}<button class="wx" data-hide="${id}" aria-label="Hide ${WNAMES[id]}" tabindex="-1">−</button></${tag}>`}
 function trayHTML(){const h=S.home.hidden;return h.length?`<span class="small muted">Hidden:</span>${h.map(id=>`<button class="chip tap" data-show="${id}">${ic('plus','gi')} ${WNAMES[id]}</button>`).join('')}`:'<span class="small muted">Long-press or drag a widget to move it. Tap − to hide one.</span>'}
@@ -148,7 +149,7 @@ V.home=()=>{const W=homeWidgets(),ord=homeOrder().filter(id=>!S.home.hidden.incl
   <div class="bigclock" id="bigClock" aria-label="Current time">${heroClock()}</div>
   <div class="hdate"><span>${new Date().toLocaleDateString('en-IN',{weekday:'long'})}</span><b>${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</b><span>${esc((S.wx&&S.wx.place)||S.settings.city.name.split(',')[0])}</span></div>
   <div class="desk-scale" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  </div><div class="desk-slip glass"><span class="slip-mark">↗</span><div><span class="slip-caption">ON THE DESK</span><a href="#news" class="tap" id="deskStoryCount">${articles} stories</a><a href="#cal" class="tap">${events} event${events===1?'':'s'}</a></div><span class="slip-code">HQ<br>001</span></div>
+  </div><div class="desk-slip glass"><span class="slip-mark">↗</span><div><span class="slip-caption">ON THE DESK</span><a href="#news" class="tap" id="deskStoryCount">${deskStories(articles)}</a><a href="#cal" class="tap">${events?events+' event'+(events===1?'':'s')+' today':'Free day'}</a></div><span class="slip-code">HQ<br>001</span></div>
   </div></section>
  <div class="home-section"><div><span class="section-number">01—10</span><h2>Your spaces<span>.</span></h2></div><p>Keep the good things close.</p><a class="more-link tap" href="#more">The drawer ${ic('chevR')}</a></div>
  <div class="bento ${homeEditing?'editing':''}" id="bento">${ord.map(id=>wFrame(id,W[id])).join('')}</div>
@@ -157,7 +158,7 @@ V.home=()=>{const W=homeWidgets(),ord=homeOrder().filter(id=>!S.home.hidden.incl
 V.home.ptr=()=>Promise.all([loadWeather(true),loadNews('ai'),loadNews('games'),loadNews('movies')]).then(()=>{if(document.body.dataset.view==='home')render()});
 V.home.after=()=>{if(window.ATM)ATM.refresh();loadWeather();if(!fxCache()||Date.now()-fxCache().at>6*36e5)loadFx();
  const stale=['ai','games','movies'];
- if(stale.length){Promise.all(stale.map(k=>loadNews(k))).then(r=>{if(r.some(Boolean)&&document.body.dataset.view==='home'&&!homeEditing&&!hDrag){const w=document.querySelector('[data-w=news]');if(w){const W=homeWidgets();const count=document.getElementById('deskStoryCount');if(count)count.textContent=homeNews.length+' stories';w.innerHTML=W.news.inner+`<button class="wx" data-hide="news" aria-label="Hide For you" tabindex="-1">−</button>`;FX.refresh()}}})}
+ if(stale.length){Promise.all(stale.map(k=>loadNews(k))).then(r=>{if(r.some(Boolean)&&document.body.dataset.view==='home'&&!homeEditing&&!hDrag){const W=homeWidgets();const count=document.getElementById('deskStoryCount');if(count)count.textContent=deskStories(homeNews.length);const w=document.querySelector('[data-w=news]');if(w){w.innerHTML=W.news.inner+`<button class="wx" data-hide="news" aria-label="Hide For you" tabindex="-1">−</button>`;FX.refresh()}}})}
  const g=$('#bento');
  g.addEventListener('click',e=>{if(homeEditing||hDrag||Date.now()-hDropAt<400){const hb=e.target.closest('[data-hide]');e.preventDefault();e.stopPropagation();if(hb&&homeEditing)hideWidget(hb.dataset.hide);return}
   const n=e.target.closest('[data-hn]');if(n){openReader(homeNews,+n.dataset.hn,n.querySelector('img'));return}

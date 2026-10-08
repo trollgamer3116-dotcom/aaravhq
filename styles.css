@@ -1612,3 +1612,31 @@ html.fx-hidden .prism-sail i{animation-play-state:paused}
 
 .motion-sleep .prism-sail i,.motion-sleep .clock-reflection,.motion-sleep .live-dot{animation-play-state:paused!important}
 .prism-desk .clock-label{font-size:10px;color:var(--tx2)}.prism-desk .hdate{font-size:11px}.prism-desk .slip-caption{font-size:9px;color:var(--tx2)}
+
+/* v41 polish: calmer clock card, honest desk counts, phone fold + dock spacing */
+.prism-sail i:nth-child(n+2){display:none}
+.prism-sail{inset:6% 4% 18% 8%}
+.prism-sail i{width:100%;left:0;transform:rotate(-7deg);border-color:#ffffff1f;opacity:.55;background:linear-gradient(120deg,color-mix(in srgb,var(--tone) 16%,transparent),transparent 55%,color-mix(in srgb,var(--tone2) 12%,transparent))}
+html[data-theme=light] .prism-sail i{border-color:#00000012;opacity:.45}
+.prism-desk .clock-reflection{opacity:.55}
+.prism-desk .hdate span:last-child{color:var(--tx2)}
+@media(max-width:600px){
+ .prism-desk{padding-top:14px}
+ .prism-desk .desk-id{margin-bottom:14px}
+ .prism-desk .greet{margin:0 0 8px}
+ .prism-desk .hero-title{font-size:64px}
+ .orbit-deck{font-size:16px;margin-top:12px}
+ .prism-desk .spectrum{margin-top:16px}
+ .prism-desk .ctx{margin-top:12px}
+ .prism-desk .hero-actions{margin-top:10px}
+ .prism-desk .desk-stack{padding-top:6px}
+ .prism-desk .desk-tab{display:none}
+ .prism-desk .hero-time{padding:20px 22px}
+ .prism-desk .bigclock{margin:20px 0 16px}
+ .prism-desk .desk-scale{margin-top:14px;height:12px}
+ .prism-sail{inset:4% 2% 14% 6%}
+ .prism-desk .hero-actions{display:none}
+ .prism-desk{gap:14px}
+ .orbit-deck{font-size:15px}
+}
+@media(max-width:370px){.prism-desk .hero-title{font-size:58px}}
