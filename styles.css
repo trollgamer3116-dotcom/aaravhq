@@ -1499,3 +1499,7 @@ body[data-view=ai] .ai-sculpture{animation:mindBreath 19s ease-in-out infinite}.
 @media(max-width:420px){.ai-heading .ptitle{font-size:38px}.ai-sculpture{width:70px;height:70px}.ai-sculpture>span{inset:25px}.ai-starters{grid-template-columns:1fr}.ai-starter{min-height:0;grid-template-columns:28px 1fr 16px;gap:10px;padding:13px}.ai-starter small{grid-column:auto;align-self:center}.ai-starter b{font-size:13px}.ai-welcome h2{font-size:42px}.ai-messages{height:430px}}
 @media(hover:hover){.ai-starter:hover{translate:0 -4px}.ai-thread:hover{background-color:#ffffff08}.ai-connection:hover,.ai-status:hover{color:var(--tx)}}
 @media(prefers-reduced-motion:reduce){.ai-sculpture,.ai-sculpture>i,.ai-sculpture>span,.ai-writing i,.ai-message,.is-thinking .ai-workspace-head svg,body[data-view=ai] .ai-sculpture{animation:none!important;will-change:auto}.ai-starter:hover{translate:none}}
+#aiConnectionForm .f{display:grid;gap:8px;font-size:12px;color:var(--tx2)}
+#aiConnectionForm input{width:100%;padding:13px 14px;background:linear-gradient(135deg,#ffffff09,#ffffff03);border:1px solid var(--line);border-radius:13px;color:var(--tx);font-size:16px;outline:none;box-shadow:inset 0 1px 0 #ffffff18;transition:border-color .3s,box-shadow .3s}
+#aiConnectionForm input:focus{border-color:var(--ember);box-shadow:inset 0 1px 0 #ffffff30,0 0 20px -16px var(--tone)}
+#aiConnectionForm input::placeholder{color:var(--tx3)}
