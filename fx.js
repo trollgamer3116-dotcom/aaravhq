@@ -21,6 +21,7 @@ if(ENABLE_REFRACTION&&isChromium&&!RM.matches){try{
 // --- reactive light: pointer, touch, tilt and scroll steer one virtual light source
 const L={x:innerWidth*.3,y:-80,tx:innerWidth*.3,ty:-80,target:null};let vis=new Set(),tracked=new Set(),reveals=new Set(),raf=0;
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?vis.add(e.target):vis.delete(e.target)),{rootMargin:'80px'});
+const motionTracked=new Set(),motionIO=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('motion-sleep',!e.isIntersecting)),{rootMargin:'60px'});
 let scrolling=false,scrollT=0;
 function frame(){raf=0;if(scrolling||document.hidden||MOBILE||RM.matches)return;L.x+=(L.tx-L.x)*.18;L.y+=(L.ty-L.y)*.18;
  // read every rect first, then write: no layout thrash
@@ -89,7 +90,7 @@ function grabbers(){document.querySelectorAll('.sheet').forEach(sh=>{if(!sh.quer
  document.addEventListener('touchmove',e=>{if(!sh)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0&&e.cancelable)e.preventDefault();sh.style.transition='none';sh.style.transform=`translate(-50%,${dy}px)`},{passive:false});
  document.addEventListener('touchcancel',()=>{if(sh){sh.style.transition='';sh.style.transform='';sh=null}},{passive:true});
  document.addEventListener('touchend',()=>{if(!sh)return;const s=sh;sh=null;s.style.transition='';const fast=dy/Math.max(1,Date.now()-t0)>.6;s.style.transform='';if(dy>110||fast&&dy>30)closeSheets()},{passive:true})})();
-function refresh(){for(const el of tracked){if(!el.isConnected){io.unobserve(el);tracked.delete(el);vis.delete(el)}}for(const el of reveals){if(!el.isConnected){rio.unobserve(el);reveals.delete(el)}}
+function refresh(){for(const el of motionTracked){if(!el.isConnected){motionIO.unobserve(el);motionTracked.delete(el)}}document.querySelectorAll('.prism-desk').forEach(el=>{if(!motionTracked.has(el)){motionTracked.add(el);motionIO.observe(el)}});for(const el of tracked){if(!el.isConnected){io.unobserve(el);tracked.delete(el);vis.delete(el)}}for(const el of reveals){if(!el.isConnected){rio.unobserve(el);reveals.delete(el)}}
  if(!MOBILE&&!RM.matches)document.querySelectorAll('.glass,.lg').forEach(el=>{if(!tracked.has(el)){tracked.add(el);io.observe(el)}});
  let i=0;document.querySelectorAll('#view .glass:not(.rv), #view .nfeat:not(.rv)').forEach(el=>el.classList.add('rv'));
  document.querySelectorAll('#view .rv:not(.in)').forEach(el=>{if(RM.matches){el.classList.add('in');return}const r=el.getBoundingClientRect();if(MOBILE&&r.top<innerHeight){el.classList.add('in');return}el.dataset.d=r.top<innerHeight?Math.min(i++*70,420):0;reveals.add(el);rio.observe(el)});

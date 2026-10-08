@@ -1566,7 +1566,7 @@ body.qc #scrim{touch-action:none}
 /* Prism desk: bounded lighting, optical edges, deliberate colour. */
 html[data-theme=dark] .bg,html[data-theme=light] .bg{background:var(--bg)}
 .bg .aur,.bg .orb{display:none}
-.current-light{inset:0!important;transition:opacity .8s ease;animation:prismDrift 24s ease-in-out infinite alternate;will-change:auto}
+.current-light{inset:-4%!important;transition:opacity .8s ease;animation:prismDrift 24s ease-in-out infinite alternate;will-change:auto}
 .current-light:not(.on){opacity:0;animation-play-state:paused}
 html[data-theme=dark] .current-light.on,html[data-theme=light] .current-light.on{opacity:1}
 @keyframes prismDrift{from{transform:translate3d(-2%,0,0)}to{transform:translate3d(2%,2%,0)}}
@@ -1600,7 +1600,7 @@ html[data-theme=dark] .glass::after,html[data-theme=light] .glass::after,html[da
 .prism-desk .hero-time{transform:none;animation:none;border-radius:28px;width:100%;padding:30px;min-width:0;background:linear-gradient(130deg,#ffffff16,#ffffff04)!important;border:1px solid color-mix(in srgb,var(--tone) 45%,var(--line));-webkit-backdrop-filter:blur(6px) saturate(140%);backdrop-filter:blur(6px) saturate(140%)}
 .prism-desk .bigclock{font-family:var(--display);font-size:clamp(72px,8vw,112px);margin:45px 0 28px;letter-spacing:-.085em}
 .prism-desk .desk-tab{top:0;left:26px;rotate:0;background:#ffffff0c;letter-spacing:.1em}
-.prism-desk .desk-slip{margin:12px 0 0 auto;rotate:0;width:84%;border-radius:18px;padding:18px;animation:none}
+.prism-desk .desk-slip{margin:12px 0 0 auto;rotate:0deg;width:84%;border-radius:18px;padding:18px;animation:none}
 .home-section h2{font-family:var(--display);font-size:32px;letter-spacing:-.06em}.bt{border-radius:24px!important}
 .bt .bth{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
 .dock,.bar,.barglass{border-radius:22px}
@@ -1609,3 +1609,6 @@ html[data-theme=dark] .glass::after,html[data-theme=light] .glass::after,html[da
 @media(max-width:370px){.spectrum-key{width:36px;padding:6px}.prism-desk .hero-title{font-size:76px}.prism-desk .hero-actions{gap:10px}.prism-desk .desk-link{font-size:10px;gap:5px}.prism-desk .hero-time{padding:20px}.prism-desk .bigclock{font-size:70px}.home-section h2{font-size:26px}}
 @media(prefers-reduced-motion:reduce){.current-light,.prism-sail i,.touch-caustic{animation:none!important}.current-light,.spectrum-key i{transition:none}}
 html.fx-hidden .prism-sail i{animation-play-state:paused}
+
+.motion-sleep .prism-sail i,.motion-sleep .clock-reflection,.motion-sleep .live-dot{animation-play-state:paused!important}
+.prism-desk .clock-label{font-size:10px;color:var(--tx2)}.prism-desk .hdate{font-size:11px}.prism-desk .slip-caption{font-size:9px;color:var(--tx2)}
