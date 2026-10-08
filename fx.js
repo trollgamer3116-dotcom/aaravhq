@@ -84,6 +84,7 @@ addEventListener('touchcancel',()=>{if(P&&!P.busy){P=null;ptrReset()}},{passive:
 // --- sheets: grabber + drag down to dismiss (phones)
 function grabbers(){document.querySelectorAll('.sheet').forEach(sh=>{if(!sh.querySelector(':scope>.grab')){const g=document.createElement('span');g.className='grab';g.setAttribute('aria-hidden','true');sh.prepend(g)}})}
 (function sheetDrag(){let sh=null,y0=0,dy=0,t0=0;
+ window.addEventListener('hq-before-close-sheet',()=>{if(sh){sh.style.transition='';sh.style.transform='';sh=null}});
  document.addEventListener('touchstart',e=>{const s=e.target.closest('.sheet.on');if(!s||innerWidth>=640||e.target.closest('input,textarea,select,button:not(.grab),label,.swatches'))return;const r=s.getBoundingClientRect();if(e.touches[0].clientY-r.top>70)return;sh=s;y0=e.touches[0].clientY;dy=0;t0=Date.now()},{passive:true});
  document.addEventListener('touchmove',e=>{if(!sh)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0&&e.cancelable)e.preventDefault();sh.style.transition='none';sh.style.transform=`translate(-50%,${dy}px)`},{passive:false});
  document.addEventListener('touchcancel',()=>{if(sh){sh.style.transition='';sh.style.transform='';sh=null}},{passive:true});

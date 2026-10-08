@@ -1507,9 +1507,9 @@ body[data-view=ai] .ai-sculpture{animation:mindBreath 19s ease-in-out infinite}.
 /* Mobile layout invariants: glass can move without moving its layout box. */
 .ptitle{overflow-wrap:anywhere}
 .sheet input,.sheet select,.sheet textarea{max-width:100%;min-width:0;font-size:16px}
-.sheet:not(#sheet)>.row:first-child{flex-wrap:nowrap;align-items:flex-start}
-.sheet:not(#sheet)>.row:first-child>div,.sheet:not(#sheet)>.row:first-child>span{min-width:0;overflow-wrap:anywhere}
-.sheet:not(#sheet)>.row:first-child>.iconbtn{flex:none}
+.sheet:not(#sheet)>.row:first-of-type{flex-wrap:nowrap;align-items:flex-start}
+.sheet:not(#sheet)>.row:first-of-type>div,.sheet:not(#sheet)>.row:first-of-type>span{min-width:0;overflow-wrap:anywhere}
+.sheet:not(#sheet)>.row:first-of-type>.iconbtn{flex:none}
 html.sheet-open,html.sheet-open body{overflow:hidden}
 body.qc #scrim{touch-action:none}
 @media(max-width:760px){
