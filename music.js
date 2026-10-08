@@ -78,19 +78,23 @@ let msLast=0;function msPos(){if(!('mediaSession' in navigator)||!navigator.medi
 // ---------- mini player ----------
 let lastPP=null;
 function setPP(){if(lastPP===playing)return;lastPP=playing;['mPlay','bigPlay','npPlay'].map(id=>document.getElementById(id)).concat([...document.querySelectorAll('.hmc [data-mc=toggle]')]).forEach(b=>{if(!b)return;b.innerHTML=playing?IC.pause:IC.play;b.setAttribute('aria-label',playing?'Pause':'Play');const s=b.firstElementChild;if(s&&!RMQ.matches)s.animate([{transform:'scale(.4) rotate(-40deg)',opacity:0},{transform:'none',opacity:1}],{duration:420,easing:'cubic-bezier(.34,1.56,.5,1)'})})}
-function updMini(){if(window.ATM){if(curVid)ATM.music(curVid);ATM.refresh()}const cq=document.getElementById('compactQ');if(cq&&gs.classList.contains('on')&&cq.dataset.track!==curVid){cq.dataset.track=curVid||'';cq.innerHTML=queueHTML(8);qFill(cq)}const m=$('#mini');if(!m)return;const d=vd(),it=curItem();const show=!!(ytReady&&d&&d.video_id);m.classList.toggle('hidden',!show);document.body.classList.toggle('hasmini',show);
+function updMini(){if(window.ATM&&!document.hidden){if(curVid)ATM.music(curVid);ATM.refresh()}const cq=document.getElementById('compactQ');if(cq&&gs.classList.contains('on')&&cq.dataset.track!==curVid){cq.dataset.track=curVid||'';cq.innerHTML=queueHTML(8);qFill(cq)}const m=$('#mini');if(!m)return;const d=vd(),it=curItem();const show=!!(ytReady&&d&&d.video_id);m.classList.toggle('hidden',!show);document.body.classList.toggle('hasmini',show);
  if(show){const t=cleanT(d.title)||(YM[d.video_id]&&cleanT(YM[d.video_id].t))||'Loading…';if($('#miniTitle').textContent!==t)$('#miniTitle').textContent=t;const sub=(d.author?cleanA(d.author)+' · ':'')+(it?it.title:'');if($('#miniSub').textContent!==sub)$('#miniSub').textContent=sub;const th=thumb(d.video_id);if($('#miniThumb').getAttribute('src')!==th)$('#miniThumb').src=th}
  lastPP=lastPP===playing&&!document.querySelector('#bigPlay:empty,#mPlay:empty')?lastPP:null;setPP();m.classList.toggle('playing',playing);
  const eq=document.getElementById('mEq');if(eq)eq.classList.toggle('paused-eq',!playing);
  const gl=document.getElementById('mGlow');if(gl&&d&&d.video_id){const u=`url(${thumb(d.video_id,'hqdefault')})`;if(gl.dataset.u!==u){gl.dataset.u=u;gl.style.backgroundImage=u}}
  const nt=document.getElementById('nowT');if(nt&&d&&d.title){nt.textContent=cleanT(d.title);const na=document.getElementById('nowA');if(na)na.textContent=cleanA(d.author)}
  document.querySelectorAll('.lcard').forEach(c=>{const on=c.dataset.id===S.music.cur;c.classList.toggle('on',on);const lp=c.querySelector('.lplay');if(lp)lp.innerHTML=on&&playing?'<span class="eq"><i></i><i></i><i></i></span>':IC.play})}
+let ytAnchor=null;const ytGeometryObserver=typeof ResizeObserver!=='undefined'?new ResizeObserver(()=>placeYT()):null;
 function placeYT(){const w=$('#ytWrap');const nv=npOpen&&S.music.npVideo?document.getElementById('npVid'):null;const slot=nv||document.getElementById('vidslot');
+ if(slot!==ytAnchor){if(ytGeometryObserver){ytGeometryObserver.disconnect();if(slot){ytGeometryObserver.observe(slot);ytGeometryObserver.observe(document.getElementById('view'))}}ytAnchor=slot}
  if(!slot){w.classList.add('off');w.classList.remove('fixed');w.style.cssText='';return}
  const r=slot.getBoundingClientRect();w.classList.remove('off');
  if(nv){w.classList.add('fixed');w.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`}
  else{w.classList.remove('fixed');w.style.cssText=`left:${r.left+scrollX}px;top:${r.top+scrollY}px;width:${r.width}px;height:${r.height}px`}}
 addEventListener('resize',placeYT);
+// Reveal transforms change the anchor after initial measurement.
+['transitionend','animationend'].forEach(type=>document.getElementById('view').addEventListener(type,e=>{if(ytAnchor&&(e.target.contains(ytAnchor)||e.target===ytAnchor))placeYT()}));
 const ctl={toggle(){if(!ytReady){playItem(curItem());return}playing?YTP.pauseVideo():YTP.playVideo()},
  next(){if(!ytReady)return;const pl=YTP.getPlaylist&&YTP.getPlaylist();if(pl&&pl.length)YTP.nextVideo();else toast('This is a single video, so there\u2019s no next track.')},
  prev(){if(!ytReady)return;if(posNow()>3||!(YTP.getPlaylist&&YTP.getPlaylist()&&YTP.getPlaylistIndex()>0))YTP.seekTo(0,true);else YTP.previousVideo()},
