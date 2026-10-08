@@ -12,4 +12,4 @@ Live: https://trollgamer3116-dotcom.github.io/aaravhq/
 ## Verification
 From `qa`, install the pinned development dependencies and run `npm test` for state, navigation, sheets, offline Vault, games and interaction regressions. Open `qa/mobile.html` for responsive sizing checks at 320, 375, 390, 430 and 768px. The optional scroll rendering probe measures its current Chrome environment; it is not an iPhone or Safari benchmark.
 
-Production assets use `?v=41`; the service worker uses `aaravhq-v41`.
+Production assets use `?v=42`; the service worker uses `aaravhq-v42`.

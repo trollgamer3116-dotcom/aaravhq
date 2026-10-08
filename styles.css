@@ -1640,3 +1640,21 @@ html[data-theme=light] .prism-sail i{border-color:#00000012;opacity:.45}
  .orbit-deck{font-size:15px}
 }
 @media(max-width:370px){.prism-desk .hero-title{font-size:58px}}
+
+/* v42 polish: readable micro-labels, calendar header on phones, mini player tuck, clearer phone bars */
+.dock a em{font-size:9px;letter-spacing:0}
+.prism-desk .desk-id{font-size:8.5px}
+.spectrum-label{font-size:9px}
+.spectrum-key{font-size:8.5px}
+.section-number,.slip-code{font-size:9px}
+body.mini-tuck .mini:not(.hidden){opacity:0;pointer-events:none;transform:translate(-50%,24px) scale(.96)}
+@media(max-width:600px){
+ .calhead{position:relative;align-items:flex-start}
+ .calhead>div:first-child{flex:1 1 auto;min-width:0}
+ .calhead .ptitle{overflow-wrap:normal;white-space:nowrap}
+ .calhead .yr{display:flex;align-items:center;min-height:44px}
+ .calhead>.row{position:absolute;right:0;bottom:0;flex-wrap:nowrap;gap:6px}
+}
+@media(max-width:760px),(pointer:coarse){
+ .dock,.mini,.barglass{-webkit-backdrop-filter:blur(8px) saturate(150%);backdrop-filter:blur(8px) saturate(150%)}
+}

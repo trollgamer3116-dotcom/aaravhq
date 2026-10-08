@@ -220,3 +220,8 @@ V.music.after=()=>{placeYT();requestAnimationFrame(placeYT);setTimeout(placeYT,4
   const it={type:p.type,id:p.id,title:p.type==='video'?'Video '+p.id:'Playlist '+p.id,added:Date.now()};S.music.lib.push(it);save();fetchTitle(it);toast('Added to library.');render()};
  document.querySelectorAll('.lcard').forEach(el=>{const x=S.music.lib.find(y=>y.id===el.dataset.id);el.querySelector('[data-play]').onclick=()=>{if(x.id===S.music.cur&&ytReady&&curVid)ctl.toggle();else playItem(x)};const rm=el.querySelector('.lx');if(rm)rm.onclick=()=>{S.music.lib=S.music.lib.filter(y=>y!==x);if(S.music.cur===x.id)S.music.cur=S.music.lib[0].id;save();render()}});
  loadYTAPI()};
+// Tuck the mini player away while the full player card is on screen; it returns once you scroll past.
+(function(){if(!('IntersectionObserver' in window))return;const B=document.body,view=document.getElementById('view');let el=null;
+ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.target===el)B.classList.toggle('mini-tuck',e.intersectionRatio>.3)}),{threshold:[0,.3,.6]});
+ const sync=()=>{const s=view.querySelector('#vidslot'),card=s&&(s.closest('.mcard')||s);if(card===el)return;if(el)io.unobserve(el);el=card;if(card)io.observe(card);else B.classList.remove('mini-tuck')};
+ new MutationObserver(sync).observe(view,{childList:true});sync()})();
