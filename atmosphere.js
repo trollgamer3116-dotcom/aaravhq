@@ -9,7 +9,7 @@ const scenes=[
  {name:'Afterglow',colors:['#d18daf','#f1b27b','#be9bdc','#729ebd']},
  {name:'Blue hour',colors:['#739ee4','#8fcad7','#af9cde','#d6b4b0']}
 ];
-let offset=Math.floor(Date.now()/60000)%scenes.length,track=null,trackColors=null,artToken=0,layerIndex=0,lastLight=0;
+let offset=Math.floor(Date.now()/60000)%scenes.length,track=null,trackColors=null,artToken=0,layerIndex=0,lastLight=0,lastTheme=null;
 const lights=[0,1].map(()=>{const el=document.createElement('div');el.className='current-light';document.querySelector('.bg').appendChild(el);return el});
 const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const hex=a=>'#'+a.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
@@ -21,8 +21,8 @@ function palette(base,now=Date.now()){
  const musical=playing&&trackColors;root.classList.toggle('music-atmosphere',!!musical);
  colors.forEach((c,k)=>{let color=blend(base[k],c,.78);if(musical)color=blend(color,trackColors[k%trackColors.length],.58);root.style.setProperty('--a'+(k+1),light?blend(color,'#ffffff',.35):color);root.style.setProperty('--b'+(k+1),light?blend(colors[(k+1)%4],'#ffffff',.35):colors[(k+1)%4])});
  const tone=musical?blend(colors[0],trackColors[0],.7):colors[0];root.style.setProperty('--tone',tone);root.style.setProperty('--tone2',colors[2]);
- if(now-lastLight>11000){lastLight=now;const next=lights[layerIndex];next.style.background=`radial-gradient(ellipse at 18% 28%,${tone}55,transparent 62%),radial-gradient(ellipse at 82% 76%,${colors[2]}44,transparent 58%)`;next.classList.add('on');lights[1-layerIndex].classList.remove('on');layerIndex=1-layerIndex}
- root.style.setProperty('--ember',blend(tone,light?'#103b35':'#e9f5da',light?.65:.5));root.style.setProperty('--ember2',blend(colors[2],light?'#24483c':'#e9f5da',light?.55:.3));
+ if(now-lastLight>11000||lastTheme!==light){lastLight=now;lastTheme=light;const next=lights[layerIndex];next.style.background=`radial-gradient(ellipse at 18% 28%,${tone}${light?'55':'66'},transparent 52%),radial-gradient(ellipse at 82% 76%,${colors[2]}${light?'44':'55'},transparent 48%)`;next.classList.add('on');lights[1-layerIndex].classList.remove('on');layerIndex=1-layerIndex}
+ root.style.setProperty('--ember',blend(tone,light?'#103b35':'#edf2ff',light?.65:.38));root.style.setProperty('--ember2',blend(colors[2],light?'#24483c':'#edf2ff',light?.55:.28));
  root.dataset.atmosphere=musical?'record':scenes[i].name.toLowerCase().replace(' ','-');
  const label=document.getElementById('moodName');if(label)label.textContent=musical?'Record light':scenes[i].name;
 }

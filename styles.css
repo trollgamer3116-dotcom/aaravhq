@@ -1428,3 +1428,28 @@ html.fx-hidden .current-light,html.fx-hidden .mood-btn i,html.fx-hidden .signal-
 
 /* The fixed mini player owns its swipe gestures. */
 .mcont{touch-action:none}
+
+/* Midnight glass · chromatic pools, cool ink and luminous cut edges. */
+html[data-theme=dark]{--bg:#080b17;--tx:#f3f4ff;--tx2:#c2c9e1;--tx3:#929fbe;--line:#b8c7ef29;--prism:#a5b8ff;--ink:#11182d;--surface-top:#c2d3ff0c;--surface-bottom:#828cff03;color-scheme:dark}
+html[data-theme=dark] .bg{background:radial-gradient(ellipse at 86% 8%,#253c752e,transparent 46%),radial-gradient(ellipse at 3% 92%,#491d6333,transparent 48%),var(--bg)}
+html[data-theme=dark] .bg .aur i{opacity:.2}
+html[data-theme=dark] .current-light.on{opacity:.78}
+html[data-theme=dark] .glass,html[data-theme=dark] .lg{background-color:color-mix(in srgb,var(--tone) 4%,transparent);box-shadow:inset 0 1px 0 #e3ebff70,inset 0 -1px 0 #b2adff1c,0 20px 48px -30px #020411b3,0 0 28px -20px color-mix(in srgb,var(--tone2) 40%,transparent)}
+html[data-theme=dark] .glass::before,html[data-theme=dark] .lg::before{background:radial-gradient(360px circle at var(--mx,20%) var(--my,0%),#eaf4ffdd,transparent 62%),linear-gradient(130deg,#d5e6ff80,#bcaaff14 35%,#ffffff05 62%,color-mix(in srgb,var(--tone2) 58%,transparent))}
+html[data-theme=dark] .glass::after,html[data-theme=dark] .lg::after{background:linear-gradient(118deg,color-mix(in srgb,var(--tone) 8%,transparent),transparent 32%,transparent 64%,color-mix(in srgb,var(--tone2) 10%,transparent))}
+html[data-theme=dark] .barglass,html[data-theme=dark] .dock,html[data-theme=dark] .mini{background:linear-gradient(135deg,#b4ccff0b,#0a102835);box-shadow:inset 0 1px 0 #dbe9ff80,inset 0 0 0 1px #c3d1ff25,0 18px 42px -24px #02030ed9}
+html[data-theme=dark] .dockblob{background:linear-gradient(145deg,color-mix(in srgb,var(--tone) 22%,transparent),#adc4ff08);box-shadow:inset 0 1px 0 #e6eeff66,inset 0 -1px 0 color-mix(in srgb,var(--tone2) 40%,transparent)}
+html[data-theme=dark] .dock a:not(.on){color:#bbc7e2}
+html[data-theme=dark] .hero-time{box-shadow:inset 0 1px 0 #eef5ffb3,inset -1px -1px 0 #b7c4ff33,0 32px 60px -34px #030615b3,0 0 56px -35px color-mix(in srgb,var(--tone2) 70%,transparent)!important}
+html[data-theme=dark] .bigclock{filter:drop-shadow(0 2px 12px #a1b7ff18)}
+html[data-theme=dark] .desk-tab{background:linear-gradient(140deg,#b4d9ff1c,#8c98ef05)}
+html[data-theme=dark] .desk-ribbon #ribbon-glass stop:nth-child(1){stop-color:#91d8ff;stop-opacity:.32}
+html[data-theme=dark] .desk-ribbon #ribbon-glass stop:nth-child(2){stop-color:var(--tone);stop-opacity:.08}
+html[data-theme=dark] .desk-ribbon #ribbon-glass stop:nth-child(3){stop-color:var(--tone2);stop-opacity:.35}
+html[data-theme=dark] .desk-ribbon #ribbon-glass stop:nth-child(4){stop-color:#ddaeff;stop-opacity:.12}
+html[data-theme=dark] .desk-ribbon #ribbon-rim stop:first-child{stop-color:#dcefff}
+html[data-theme=dark] .btn.pri{background:linear-gradient(135deg,color-mix(in srgb,var(--tone) 65%,#edf4ff),color-mix(in srgb,var(--tone2) 70%,#d6e5ff));color:#11182d;box-shadow:inset 0 1px 0 #ffffff99,0 6px 22px -14px var(--tone)}
+html[data-theme=dark] .iconbtn.acc,html[data-theme=dark] .mtile .mi{background:color-mix(in srgb,var(--tone) 9%,transparent)}
+html[data-theme=dark] .sheet.lg,html[data-theme=dark] .spot-box.glass{background:linear-gradient(145deg,#131c36ed,#0b1021e6);border-color:#b2c8ff3b}
+html[data-theme=dark] input,html[data-theme=dark] textarea,html[data-theme=dark] select{color-scheme:dark}
+html[data-theme=dark] ::selection{background:var(--ember);color:#10172b}
