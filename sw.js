@@ -1,5 +1,5 @@
-const V='aaravhq-v31';
-const CORE=['./','index.html','styles.css?v=31','app.js?v=31','news.js?v=31','music.js?v=31','search.js?v=31','fx.js?v=31','boot.js?v=31','atmosphere.js?v=31','ai.js?v=31','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
+const V='aaravhq-v32';
+const CORE=['./','index.html','styles.css?v=32','app.js?v=32','news.js?v=32','music.js?v=32','search.js?v=32','fx.js?v=32','boot.js?v=32','atmosphere.js?v=32','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
 const FONT_HOSTS=/^(fonts\.googleapis\.com|fonts\.gstatic\.com)$/;
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('aaravhq-v')&&k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
