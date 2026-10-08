@@ -1381,3 +1381,10 @@ html[data-theme=light] .dockblob{background:linear-gradient(145deg,#fffef59c,#ff
  .hero-time{transform:none}.desk-slip{rotate:-3deg}
  .mark svg,.desk-link>.gi{transition:none}
 }
+
+/* Finish the desk identity and preserve the visual order of custom layouts. */
+.hero-title .cursor-notch{background:none;-webkit-text-fill-color:var(--ember);color:var(--ember)}
+.bento{grid-auto-flow:row}
+.desk-id{font-size:10px}.clock-label{font-size:9px}.clock-label span:last-child{font-size:8px}
+.desk-tab{font-size:9px}.hdate{font-size:10px}.slip-caption{font-size:8px}.slip-code{font-size:9px}.nsrc{font-size:10px}
+@media(max-width:600px){.desk-id{font-size:9px}.clock-label,.desk-tab{font-size:8px}.hdate{font-size:9px}.slip-caption{font-size:7px}.slip-code{font-size:8px}.bento>[data-w=notes]{grid-column:span 2}}
