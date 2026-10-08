@@ -1,5 +1,5 @@
-const V='aaravhq-v34';
-const CORE=['./','index.html','styles.css?v=34','app.js?v=34','news.js?v=34','music.js?v=34','search.js?v=34','fx.js?v=34','boot.js?v=34','atmosphere.js?v=34','plus.js?v=34','play.js?v=34','plus.css?v=34','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
+const V='aaravhq-v35';
+const CORE=['./','index.html','styles.css?v=35','app.js?v=35','news.js?v=35','music.js?v=35','search.js?v=35','fx.js?v=35','boot.js?v=35','atmosphere.js?v=35','plus.js?v=35','play.js?v=35','plus.css?v=35','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
 const FONT_HOSTS=/^(fonts\.googleapis\.com|fonts\.gstatic\.com)$/;
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('aaravhq-v')&&k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
@@ -9,7 +9,7 @@ self.addEventListener('fetch',e=>{
   const same=u.origin===location.origin;
   // Never touch API / media calls (YouTube, Open-Meteo, RSS proxies, FX rates, geocoding, news images): straight to network.
   if(!same&&!FONT_HOSTS.test(u.hostname))return;
-  if(e.request.mode==='navigate'){e.respondWith(fetch(e.request).then(r=>{const cl=r.clone();caches.open(V).then(c=>c.put('index.html',cl));return r}).catch(()=>caches.match('index.html')));return}
+  if(e.request.mode==='navigate'&&same&&[new URL('./',self.location).pathname,new URL('index.html',self.location).pathname].includes(u.pathname)){e.respondWith(fetch(e.request).then(r=>{if(r.ok){const cl=r.clone();caches.open(V).then(c=>c.put('index.html',cl))}return r}).catch(()=>caches.match('index.html')));return}
   e.respondWith(caches.match(e.request).then(hit=>{
     const net=fetch(e.request).then(r=>{if(r.ok){const cl=r.clone();caches.open(V).then(c=>c.put(e.request,cl))}return r}).catch(()=>hit);
     return hit||net;

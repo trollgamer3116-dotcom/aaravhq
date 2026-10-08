@@ -4,4 +4,28 @@
 @media(max-width:900px){.vault-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.vault-grid{grid-template-columns:1fr;gap:14px}.plus-toolbar{gap:8px;padding:12px}.plus-toolbar input{flex-basis:100%}.plus-toolbar select{flex:1;max-width:none}.plus-toolbar .btn{font-size:12px;padding:10px 12px}.plus-two{grid-template-columns:1fr}.browser-bar form{gap:4px}.browser-bar form>span{display:none}.browser-bar .btn{font-size:12px;padding:10px}.continue-grid{display:flex;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px}.continue-card{flex:0 0 76%;scroll-snap-align:start}.play-workspace{padding:18px;border-radius:30px}.play-intro h2{font-size:27px}.game-grid{gap:9px}.game-tile{border-radius:18px;font-size:29px}.reaction-pad span{font-size:27px}.play-tabs button{font-size:12px}.embed-sheet form{flex-wrap:wrap}.embed-sheet form input{width:100%}.vault-card{padding:20px}.plus-picklist{max-height:36vh}}
 @media(prefers-reduced-motion:reduce){.game-tile,.reaction-pad{transition:none}}
 
-.btn[hidden]{display:none}.vault-card{content-visibility:auto;contain-intrinsic-size:auto 280px}.sheet:not(.on){visibility:hidden}.sheet.on{visibility:visible}
+.btn[hidden]{display:none}.vault-card{content-visibility:visible}.sheet:not(.on){visibility:hidden}.sheet.on{visibility:visible}
+
+.play-workspace{width:100%;min-width:0;justify-self:center}
+.play-tabs{display:flex;width:100%;max-width:480px;margin:auto;min-width:0}
+.play-tabs button{flex:1;min-width:0;white-space:nowrap;padding:10px 8px}
+.game-grid{width:100%}
+.game-tile{min-width:0;min-height:0;padding:0;display:grid;place-items:center}
+.plus-toolbar>*{max-width:100%}
+.plus-toolbar input{width:100%}
+.browser-bar input{width:0;min-width:0}
+.browse-recent{gap:12px;min-width:0}.browse-recent>*{min-width:0}
+@media(max-width:600px){
+ .play-workspace{margin:4px auto 16px;padding:16px}
+ body[data-view=play] .view{gap:12px}
+ body[data-view=play] .phead{padding-bottom:0}
+ body[data-view=play] .page-deck{margin:0}
+ .play-intro{margin:18px 0 12px}
+ .play-intro h2{font-size:25px}
+ .game-info{margin:14px 0;gap:8px}
+ .play-footer{margin-top:18px}
+ .reaction-pad{min-height:220px}
+ .plus-toolbar select{flex-basis:100%;width:100%}
+ .vault-meta{flex-wrap:wrap}
+}
+@media(max-width:370px){.play-tabs button{font-size:11px;padding:10px 4px}.game-grid{gap:7px}.game-tile{font-size:25px}.vault-empty{padding:24px}}
