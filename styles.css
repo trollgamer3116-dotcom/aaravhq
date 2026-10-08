@@ -1561,3 +1561,16 @@ body.qc #scrim{touch-action:none}
 @media(hover:hover){.mtile:hover{border-color:var(--tone);background-color:color-mix(in srgb,var(--tone2) 12%,transparent)}.mtile:hover .mi{transform:rotate(-9deg) scale(1.12)}}
 @media(max-width:600px){.ptitle{font-size:clamp(38px,11.5vw,56px);line-height:1.08}.play-intro h2{font-size:25px}}
 @media(prefers-reduced-motion:reduce){.contact-glow{animation:none}.current-light,.glass,.lg{transition:none}}
+
+/* Give interaction colours a visible surface in both themes. */
+html[data-theme=dark] .bg,html[data-theme=light] .bg{background:radial-gradient(ellipse at 8% 12%,color-mix(in srgb,var(--tone) 27%,transparent),transparent 65%),radial-gradient(ellipse at 92% 85%,color-mix(in srgb,var(--tone2) 20%,transparent),transparent 68%),var(--bg)}
+html[data-theme=dark] .current-light.on{opacity:.92}
+html[data-theme=dark] .glass,html[data-theme=dark] .lg{background-color:color-mix(in srgb,var(--tone) 11%,transparent)}
+html[data-theme=dark] .glass::after,html[data-theme=dark] .lg::after{background:linear-gradient(118deg,color-mix(in srgb,var(--tone) 24%,transparent),transparent 42%,color-mix(in srgb,var(--tone2) 18%,transparent))}
+html[data-theme=light] .glass,html[data-theme=light] .lg{background-color:color-mix(in srgb,var(--tone) 9%,transparent)}
+html[data-theme=light] .glass::after,html[data-theme=light] .lg::after{background:linear-gradient(118deg,color-mix(in srgb,var(--tone) 20%,transparent),transparent 42%,color-mix(in srgb,var(--tone2) 15%,transparent))}
+html[data-theme=dark] .barglass,html[data-theme=dark] .dock,html[data-theme=dark] .mini{background:linear-gradient(135deg,color-mix(in srgb,var(--tone) 16%,transparent),color-mix(in srgb,var(--tone2) 9%,transparent)),#0a102838}
+html[data-theme=light] .barglass,html[data-theme=light] .dock,html[data-theme=light] .mini{background:linear-gradient(135deg,color-mix(in srgb,var(--tone) 13%,#ffffff88),#ffffff77)}
+.hero-time{border-color:color-mix(in srgb,var(--tone) 65%,var(--line))}
+
+.current-light:not(.on){display:none}
