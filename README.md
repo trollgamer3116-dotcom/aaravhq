@@ -13,3 +13,6 @@ Live: https://trollgamer3116-dotcom.github.io/aaravhq/
 From `qa`, install the pinned development dependencies and run `npm test` for state, navigation, sheets, offline Vault, games and interaction regressions. Open `qa/mobile.html` for responsive sizing checks at 320, 375, 390, 430 and 768px. The optional scroll rendering probe measures its current Chrome environment; it is not an iPhone or Safari benchmark.
 
 Production assets use `?v=42`; the service worker uses `aaravhq-v42`.
+
+## Music shelf (v44)
+Music opens to a personal shelf with a YouTube Music handoff, discoveries, Listen later, favourites, search and removal undo. Existing saved links are retained. Handoffs record only that a link was opened; HQ cannot see playback or start a personalised shuffle in the destination. YouTube embeds load only after choosing the optional HQ player. Save a song or playlist link with Share → Copy link to add it.
