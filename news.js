@@ -8,7 +8,7 @@ const newsDefaults=()=>({topics:['ai','games','movies'],hiddenSources:[],lastVis
 S.newsPrefs=Object.assign(newsDefaults(),S.newsPrefs);if(!Array.isArray(S.newsPrefs.topics)||!S.newsPrefs.topics.some(k=>FEEDS[k]))S.newsPrefs.topics=['ai','games','movies'];if(!Array.isArray(S.newsPrefs.hiddenSources))S.newsPrefs.hiddenSources=[];
 let newsHadVisit=!!S.newsPrefs.lastVisit;
 let newsSince=Number(S.newsPrefs.lastVisit)||Date.now()-864e5,newsOnlyNew=false;
-function newsEnter(){newsHadVisit=!!S.newsPrefs.lastVisit;newsSince=Number(S.newsPrefs.lastVisit)||Date.now()-864e5;S.newsPrefs.lastVisit=Date.now();save()}
+function newsEnter(){hqpWake();newsHadVisit=!!S.newsPrefs.lastVisit;newsSince=Number(S.newsPrefs.lastVisit)||Date.now()-864e5;S.newsPrefs.lastVisit=Date.now();save()}
 const newsAllowed=i=>!S.newsPrefs.hiddenSources.includes(i.src);
 const newsFresh=i=>(i.date||0)>newsSince&&!isRead(i);
 function newsPreferences(){openSheet(`<div class="row between"><div><div class="kicker">YOUR SIGNAL</div><h2>Make it yours.</h2></div><button class="iconbtn tap" id="newsPrefsClose" aria-label="Close news preferences">×</button></div><p class="muted small">Choose what belongs in For you.</p><div class="news-topics">${Object.keys(FEEDS).map(k=>`<button class="btn tap ${S.newsPrefs.topics.includes(k)?'selected':''}" data-topic="${k}" aria-pressed="${S.newsPrefs.topics.includes(k)}">${FEEDS[k].n}</button>`).join('')}</div><p class="kicker" style="margin-top:24px">Sources</p><div class="news-sources">${[...new Set([...Object.values(SRCN),...Object.keys(FEEDS).flatMap(k=>(newsCache(k)?.items||[]).map(i=>i.src))])].sort().map(src=>`<label><span>${esc(src)}</span><input type="checkbox" data-source="${esc(src)}" aria-label="Show ${esc(src)}" ${S.newsPrefs.hiddenSources.includes(src)?'':'checked'}></label>`).join('')}</div><p class="small muted">Hidden sources stay available in Saved.</p>`,sh=>{sh.querySelector('#newsPrefsClose').onclick=closeSheets;sh.querySelectorAll('[data-topic]').forEach(b=>b.onclick=()=>{const topics=S.newsPrefs.topics,k=b.dataset.topic;if(topics.includes(k)){if(topics.length===1)return toast('Keep at least one topic.');topics.splice(topics.indexOf(k),1)}else topics.push(k);b.classList.toggle('selected',topics.includes(k));b.setAttribute('aria-pressed',String(topics.includes(k)));save();nPaint()});sh.querySelectorAll('[data-source]').forEach(input=>input.onchange=()=>{const hidden=S.newsPrefs.hiddenSources,src=input.dataset.source;if(input.checked)S.newsPrefs.hiddenSources=hidden.filter(x=>x!==src);else if(!hidden.includes(src))hidden.push(src);save();nPaint()})})}
@@ -116,6 +116,14 @@ async function viaWP(it){const u=new URL(it.link),seg=u.pathname.split('/').filt
  if(m){const r=await tfetch(`${base}/${m[1]}?_fields=content,jetpack_featured_media_url`,8000);if(r.ok)j=await r.json()}
  if(!j||!j.content){const r=await tfetch(`${base}?slug=${encodeURIComponent(slug)}&_fields=content,jetpack_featured_media_url`,8000);if(r.ok)j=(await r.json())[0]}
  if(!j||!j.content)return null;const o=pack(clean(j.content.rendered,it.link,false),'wp');const fm=j.jetpack_featured_media_url;if(fm&&/^https:\/\//.test(fm))o.img=/\?/.test(fm)?fm:fm+'?w=1200';return o}
+// HQ's own reader server (Render free tier: it naps after ~15 min idle, so we wake it when News opens).
+const HQP='https://hq-news-proxy.onrender.com';let hqpAt=0,hqpWaking=null;
+const hqpWarm=()=>Date.now()-hqpAt<12*6e4;
+function hqpWake(){if(hqpWarm())return Promise.resolve(true);if(hqpWaking)return hqpWaking;if(navigator.onLine===false)return Promise.resolve(false);
+ return hqpWaking=tfetch(HQP+'/health',60000,{cache:'no-store'}).then(r=>{if(r.ok)hqpAt=Date.now();return r.ok},()=>false).finally(()=>{hqpWaking=null})}
+async function viaHQ(it){const cold=!hqpWarm();const r=await tfetch(HQP+'/article?url='+encodeURIComponent(it.link),cold?55000:15000);if(!r.ok)throw 0;hqpAt=Date.now();
+ const j=await r.json();if(!j||typeof j.content!=='string'||!j.content)return null;const o=pack(articleize(clean(j.content,it.link,false),it),'hq');
+ if(j.leadImage&&/^https:\/\//.test(j.leadImage))o.img=j.leadImage;return o}
 async function viaJina(it){const r=await tfetch('https://r.jina.ai/'+it.link,9000);if(!r.ok)throw 0;let t=await r.text();const k=t.indexOf('Markdown Content:');if(k>=0)t=t.slice(k+17);return pack(articleize(clean(md2html(t),it.link,false),it),'reader')}
 async function viaProxyPage(it){const r=await tfetch('https://api.allorigins.win/raw?url='+encodeURIComponent(it.link),9000);if(!r.ok)throw 0;const h=extractHTML(await r.text());return h?pack(articleize(clean(h,it.link,true),it),'proxy'):null}
 function rcAll(){try{return JSON.parse(localStorage.getItem(RKEY)||'{}')}catch(e){return {}}}
@@ -127,8 +135,14 @@ function getArticle(it){if(artBusy[it.id])return artBusy[it.id];return artBusy[i
  if(it.body){const f=pack(it.body,'feed');if(f.words>=350)res=f}
  if(!res&&WPH.test(hostOf(it.link))){try{res=await viaWP(it)}catch(e){}}
  const better=r=>r&&r.words>=120&&r.words>(res?res.words:0)+60;
- if((!res||res.words<250)&&navigator.onLine!==false){const r=await new Promise(done=>{let left=2,best=null;const fin=x=>{if(better(x)&&(!best||x.words>best.words))best=x;if(best&&best.words>=250||--left<=0)done(best)};
-   [viaJina,viaProxyPage].forEach(f=>f(it).then(fin,()=>fin(null)))});if(better(r))res=r}
+ if((!res||res.words<250)&&navigator.onLine!==false){const r=await new Promise(done=>{let best=null,left=3,hqDone=false,over=false,fbOn=false,grace=0;
+   // HQ's server is primary; the free proxies start only if it is slow or fails, and a proxy result waits a short grace for HQ.
+   const end=x=>{if(!over){over=true;clearTimeout(fbT);clearTimeout(grace);done(x)}};
+   const fin=(x,hq)=>{if(over)return;if(hq)hqDone=true;if(better(x)&&(!best||x.words>best.words||hq&&x.words>=250))best=x;
+    if(hq&&best&&best.via==='hq')return end(best);if(hq&&!fbOn)startFb();--left;
+    if(left<=0||hqDone&&best&&best.words>=250)return end(best);if(best&&best.words>=250&&!grace)grace=setTimeout(()=>end(best),hqpWarm()?2500:6000)};
+   const startFb=()=>{if(fbOn)return;fbOn=true;[viaJina,viaProxyPage].forEach(f=>f(it).then(x=>fin(x),()=>fin(null)))};
+   const fbT=setTimeout(startFb,hqpWarm()?6000:2500);viaHQ(it).then(x=>fin(x,true),()=>fin(null,true))});if(better(r))res=r}
  if(res&&res.words>=120){rcPut(it.id,res);return res}return null})().finally(()=>{delete artBusy[it.id]})}
 
 // ---------- feeds ----------
@@ -222,7 +236,7 @@ function rdFinish(res,it){const b=$('#rdBody');if(!b)return;
  if(res&&it.img)res={html:(()=>{const t=RD.createElement('div');t.innerHTML=res.html;const f=t.querySelector('img');if(f&&sameImg(f.getAttribute('src'),it.img)){const fig=f.closest('figure');(fig||f).remove()}return t.innerHTML})(),words:res.words,via:res.via};
  b.innerHTML=res?tidyReader(res.html):rdFallback(it);b.querySelectorAll('a[href]').forEach(a=>{a.target='_blank';a.rel='noopener noreferrer'});b.querySelectorAll('img').forEach(i=>{i.loading='lazy';i.decoding='async';i.referrerPolicy='no-referrer';i.onerror=()=>{const f=i.closest('figure');(f&&!f.textContent.trim()?f:i).remove()}});
  const fp=b.querySelector(':scope>p');b.classList.toggle('dc',!!(res&&fp&&fp===b.firstElementChild&&fp.textContent.trim().length>180&&/^[A-Za-z“"]/.test(fp.textContent.trim())));
- $('#rdMins').textContent=res?mins(res.words)+' min read':'Summary';const v=$('#rdVia');if(v)v.textContent=res?({feed:'From the feed',wp:'Full text',reader:'Reader view',proxy:'Reader view'})[res.via]||'':'';
+ $('#rdMins').textContent=res?mins(res.words)+' min read':'Summary';const v=$('#rdVia');if(v)v.textContent=res?({feed:'From the feed',wp:'Full text',hq:'Full text',reader:'Reader view',proxy:'Reader view'})[res.via]||'':'';
  b.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:450,easing:'cubic-bezier(.16,1,.3,1)'});rdProgress()}
 function rdLateHero(src,it){const pre=new Image();pre.referrerPolicy='no-referrer';pre.onload=()=>{if(RDR.it!==it||!RDR.open||it.img)return;const h=$('#rdPage .rd-hero.none'),sc=$('#rdScroll');if(!h||!sc||sc.scrollTop>40)return;
  it.img=src;h.className='rd-hero';h.innerHTML=`<img id="rdHero" src="${esc(src)}" alt="" referrerpolicy="no-referrer"><i class="rd-hf"></i>`;
@@ -242,7 +256,7 @@ function rdRender(){const it=RDR.list[RDR.i];RDR.it=it;const nx=RDR.list[RDR.i+1
  $('#rdScroll').scrollTop=0;rdProgress();$('#rdPrev').disabled=RDR.i===0;$('#rdNext').disabled=!nx;
  const keep=document.getElementById('rdKeep');if(keep)keep.onclick=()=>{closeReader(true);HQPLUS.story(it)};
  const n=document.getElementById('rdNx');if(n)n.onclick=()=>rdGo(1);
- if(cached)rdFinish(cached,it);else getArticle(it).then(res=>{if(RDR.it===it&&RDR.open)rdFinish(res,it)})}
+ if(cached)rdFinish(cached,it);else{setTimeout(()=>{const w=RDR.it===it&&document.querySelector('#rdBody .rd-wait span');if(w)w.textContent='Tuning in\u2026 the full story is on its way.'},4000);getArticle(it).then(res=>{if(RDR.it===it&&RDR.open)rdFinish(res,it)})}}
 function markRead(it){if(!S.readIds.includes(it.id)){S.readIds.unshift(it.id);S.readIds=S.readIds.slice(0,300);if(it.cat)S.newsReads[it.cat]=(S.newsReads[it.cat]||0)+1;const t=today();S.readLog[t]=(S.readLog[t]||0)+1;save()}}
 function rdProgress(){const s=$('#rdScroll'),h=s.scrollHeight-s.clientHeight;const p=h>0?Math.min(1,s.scrollTop/h):0;$('#rdProg').style.transform=`scaleX(${p.toFixed(4)})`;
  const im=document.getElementById('rdHero');if(im&&!RMQ.matches){const y=s.scrollTop;im.style.transform=y>=0?`translate3d(0,${(y*.45).toFixed(1)}px,0) scale(${(1+Math.min(y,600)/3000).toFixed(4)})`:`scale(${(1-y/300).toFixed(4)})`}
